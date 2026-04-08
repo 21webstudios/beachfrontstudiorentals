@@ -5,136 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Cleaner Calendar &middot; BeachfrontStudioRentals.com</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
-  <style>
-
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{--sand:#f5ede0;--sand-dk:#ede0cc;--ocean:#2a6b8a;--ocean-dk:#1e5470;--foam:#e8f4f8;--deep:#1a3a4a;--gold:#c9a96e;--gold-lt:#e8d5b0;--text:#2c2c2c;--muted:#5a6a70;--checkin-bg:#2e7d4f;--checkin-text:#ffffff;--checkout-bg:#b02a2a;--checkout-text:#ffffff;--occupied-bg:#cde0ea;--occupied-text:#1a3a4a;--empty-bg:#f0e8dc;--empty-text:#8a9aa0;}
-    html{scroll-behavior:smooth;}
-    body{font-family:'Jost',sans-serif;background:var(--sand);color:var(--text);overflow-x:hidden;}
-
-    /* ── NAV ── */
-    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;height:75px;padding:0 3rem;overflow:visible;background:#1a3a4a;border-bottom:1px solid rgba(201,169,110,0.25);}
-    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;color:rgba(232,244,248,0.95);text-decoration:none;letter-spacing:0.04em;line-height:1.2;}
-    .nav-logo span{display:block;font-size:0.65rem;font-family:'Jost',sans-serif;font-weight:400;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);}
-    .nav-links{display:flex;gap:2.2rem;list-style:none;align-items:center;}
-    .nav-links a,.nav-links button{text-decoration:none;font-size:0.78rem;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:rgba(232,244,248,0.8);transition:color 0.2s;background:none;border:none;cursor:pointer;font-family:'Jost',sans-serif;padding:0;}
-    .nav-links a:hover,.nav-links a.active,.nav-links button:hover{color:var(--gold);}
-    .nav-toggle{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;padding:4px;}
-    .nav-toggle span{display:block;width:22px;height:2px;background:rgba(232,244,248,0.8);}
-
-    /* ── CONTACT MODAL ── */
-    .contact-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:400;align-items:center;justify-content:center;padding:2rem;}
-    .contact-modal.open{display:flex;}
-    .contact-box{background:var(--sand);max-width:540px;width:100%;padding:2.5rem;position:relative;max-height:90vh;overflow-y:auto;}
-    .contact-box-close{position:absolute;top:1rem;right:1.25rem;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--muted);line-height:1;}
-    .contact-box-eyebrow{font-size:0.68rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:0.5rem;}
-    .contact-box-title{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:300;color:var(--deep);margin-bottom:1.75rem;line-height:1.2;}
-    .contact-form{display:flex;flex-direction:column;gap:0.85rem;}
-    .contact-form input,.contact-form select,.contact-form textarea{width:100%;padding:0.75rem 1rem;border:1px solid rgba(42,107,138,0.22);background:white;font-family:'Jost',sans-serif;font-size:0.88rem;color:var(--text);outline:none;transition:border-color 0.2s;resize:none;-webkit-appearance:none;appearance:none;}
-    .contact-form input:focus,.contact-form select:focus,.contact-form textarea:focus{border-color:var(--ocean);}
-    .contact-form textarea{height:100px;}
-    .date-row{display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;}
-    .contact-nudge{font-size:0.78rem;color:var(--ocean);font-style:italic;display:none;padding:0.4rem 0.75rem;background:rgba(42,107,138,0.07);border-left:2px solid var(--ocean);}
-    .contact-submit{background:var(--ocean);color:white;padding:0.9rem;font-family:'Jost',sans-serif;font-size:0.78rem;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;border:none;cursor:pointer;transition:background 0.2s;width:100%;margin-top:0.25rem;}
-    .contact-submit:hover{background:var(--deep);}
-    .contact-success{display:none;text-align:center;padding:2rem 0;}
-    .contact-success .check{font-size:2.5rem;color:var(--gold);margin-bottom:0.75rem;}
-    .contact-success p{font-size:0.92rem;color:var(--muted);font-weight:300;line-height:1.85;}
-
-    /* ── FOOTER ── */
-    footer{background:#1a3a4a;color:rgba(232,244,248,0.6);padding:3rem 3rem 2rem;margin-top:5rem;}
-    .footer-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:3rem;padding-bottom:2.5rem;border-bottom:1px solid rgba(255,255,255,0.08);}
-    .footer-brand .footer-logo{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:600;color:white;letter-spacing:0.04em;margin-bottom:0.8rem;}
-    .footer-brand p{font-size:0.82rem;line-height:1.8;font-weight:300;max-width:300px;}
-    .footer-legal{font-size:0.75rem;color:rgba(232,244,248,0.4);line-height:1.7;font-weight:300;margin-top:1rem;max-width:300px;}
-    .footer-col h4{font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;font-weight:500;}
-    .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:0.55rem;}
-    .footer-col ul a,.footer-col ul button{font-size:0.82rem;color:rgba(232,244,248,0.6);text-decoration:none;font-weight:300;transition:color 0.2s;background:none;border:none;cursor:pointer;font-family:'Jost',sans-serif;padding:0;text-align:left;}
-    .footer-col ul a:hover,.footer-col ul button:hover{color:var(--gold);}
-    .footer-bottom{max-width:1200px;margin:1.8rem auto 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;}
-    .footer-bottom p{font-size:0.75rem;font-weight:300;letter-spacing:0.05em;}
-    .footer-credit{font-size:0.75rem;font-weight:300;color:rgba(232,244,248,0.4);}
-    .footer-credit a{color:var(--gold);text-decoration:none;transition:color 0.2s;}
-    .footer-credit a:hover{color:var(--gold-lt);}
-
-    /* ── GATE ── */
-    #gate{position:fixed;inset:0;background:var(--deep);display:flex;align-items:center;justify-content:center;z-index:999;padding:2rem;}
-    #gate-box{background:var(--sand);padding:3rem 2.5rem;max-width:380px;width:100%;text-align:center;}
-    #gate-eyebrow{font-size:0.68rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:0.5rem;}
-    #gate-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--deep);margin-bottom:0.4rem;}
-    #gate-sub{font-size:0.82rem;color:var(--muted);font-weight:300;margin-bottom:2rem;line-height:1.6;}
-    #gate-input{width:100%;padding:0.75rem 1rem;border:1px solid rgba(42,107,138,0.25);background:white;font-family:'Jost',sans-serif;font-size:1rem;color:var(--text);outline:none;text-align:center;letter-spacing:0.2em;margin-bottom:0.75rem;transition:border-color 0.2s;}
-    #gate-input:focus{border-color:var(--ocean);}
-    #gate-error{font-size:0.78rem;color:var(--checkout-bg);margin-bottom:0.75rem;display:none;font-weight:500;}
-    #gate-btn{width:100%;background:var(--ocean);color:white;padding:0.85rem;border:none;font-family:'Jost',sans-serif;font-size:0.78rem;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;transition:background 0.2s;}
-    #gate-btn:hover{background:var(--deep);}
-
-    /* ── MAIN ── */
-    #main{display:none;padding-top:75px;}
-    .cleaner-wrap{max-width:1200px;margin:0 auto;padding:3rem 2rem 5rem;}
-    .page-eyebrow{font-size:0.7rem;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:0.5rem;text-align:center;}
-    .page-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:300;color:var(--deep);margin-bottom:0.4rem;text-align:center;}
-    .page-sub{font-size:0.85rem;color:var(--muted);font-weight:300;margin-bottom:2rem;text-align:center;}
-
-    /* ── LEGEND ── */
-    .legend{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.5rem;align-items:center;}
-    .legend-item{display:flex;align-items:center;gap:0.5rem;font-size:0.75rem;color:var(--muted);font-weight:400;}
-    .legend-dot{width:14px;height:14px;border-radius:2px;flex-shrink:0;}
-    .legend-turnday{width:14px;height:14px;flex-shrink:0;position:relative;overflow:hidden;border-radius:2px;}
-    .legend-turnday::before{content:'';position:absolute;inset:0;background:var(--checkout-bg);clip-path:polygon(100% 0,100% 100%,0 0);}
-    .legend-turnday::after{content:'';position:absolute;inset:0;background:var(--checkin-bg);clip-path:polygon(0 0,0 100%,100% 100%);}
-
-    /* ── CALENDARS ── */
-    .cals-wrap{display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
-    .cal-card{background:white;border:1px solid rgba(42,107,138,0.1);box-shadow:0 2px 20px rgba(42,107,138,0.06);padding:2rem;}
-    .cal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem;}
-    .cal-unit-name{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;color:var(--deep);line-height:1.1;}
-    .cal-unit-sub{font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-top:0.2rem;}
-    .cal-nav{display:flex;align-items:center;gap:0.5rem;}
-    .cal-nav-btn{background:none;border:1px solid rgba(201,169,110,0.4);color:var(--deep);width:30px;height:30px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
-    .cal-nav-btn:hover{background:var(--sand);}
-    .cal-month-label{font-size:0.72rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--deep);font-weight:500;text-align:center;margin-bottom:1rem;}
-    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
-    .cal-day-hdr{font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);text-align:center;padding:0.3rem 0;font-weight:500;}
-
-    /* ── DAY CELLS ── */
-    .cal-cell{min-height:62px;padding:0.35rem 0.4rem 0.25rem;display:flex;flex-direction:column;justify-content:space-between;border:1px solid rgba(0,0,0,0.04);position:relative;overflow:hidden;}
-    .cal-cell.empty-cell{background:transparent;border-color:transparent;}
-    .cal-date{font-size:0.82rem;font-weight:500;line-height:1;text-align:right;position:relative;z-index:2;}
-    .cal-status{font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;font-weight:600;text-align:center;padding:0.2rem 0.3rem;border-radius:1px;position:relative;z-index:2;}
-    .state-empty{background:var(--empty-bg);}
-    .state-empty .cal-date{color:var(--empty-text);}
-    .state-empty .cal-status{background:rgba(90,106,112,0.1);color:var(--empty-text);}
-    .state-occupied{background:var(--occupied-bg);}
-    .state-occupied .cal-date{color:var(--occupied-text);}
-    .state-occupied .cal-status{background:rgba(42,107,138,0.15);color:var(--occupied-text);}
-    .state-checkin{background:var(--checkin-bg);}
-    .state-checkin .cal-date{color:var(--checkin-text);}
-    .state-checkin .cal-status{background:rgba(255,255,255,0.2);color:var(--checkin-text);}
-    .state-checkout{background:var(--checkout-bg);}
-    .state-checkout .cal-date{color:var(--checkout-text);}
-    .state-checkout .cal-status{background:rgba(255,255,255,0.2);color:var(--checkout-text);}
-    .state-turnday{background:transparent;}
-    .state-turnday::before{content:'';position:absolute;inset:0;background:var(--checkout-bg);clip-path:polygon(100% 0,100% 100%,0 0);z-index:0;}
-    .state-turnday::after{content:'';position:absolute;inset:0;background:var(--checkin-bg);clip-path:polygon(0 0,0 100%,100% 100%);z-index:0;}
-    .state-turnday .cal-date{color:white;text-shadow:0 1px 3px rgba(0,0,0,0.5);}
-    .state-turnday .cal-status{background:rgba(0,0,0,0.2);color:white;text-shadow:0 1px 2px rgba(0,0,0,0.4);}
-    .cal-cell.past{opacity:0.45;}
-    .cal-updated{font-size:0.68rem;color:var(--muted);font-weight:300;text-align:center;margin-top:1rem;font-style:italic;}
-    .cal-loading{text-align:center;font-size:0.82rem;color:var(--muted);font-weight:300;padding:2rem 0;font-style:italic;}
-
-    /* ── FUTURE NOTE ── */
-    .future-note{margin:3rem 0 0;border:1px dashed rgba(201,169,110,0.4);padding:1.5rem 2rem;text-align:center;}
-    .future-note p{font-size:0.82rem;color:var(--muted);font-weight:300;font-style:italic;line-height:1.7;}
-    .future-note strong{color:var(--gold);font-style:normal;font-weight:500;}
-
-    /* ── RESPONSIVE ── */
-    @media(max-width:900px){.footer-inner{grid-template-columns:1fr 1fr;gap:2rem;}}
-    @media(max-width:800px){.cals-wrap{grid-template-columns:1fr;}.cal-cell{min-height:52px;}}
-    @media(max-width:768px){nav{padding:0 1.5rem;}.nav-links{display:none;flex-direction:column;position:absolute;top:75px;left:0;right:0;background:#1a3a4a;padding:1.5rem 2rem;gap:1.4rem;border-bottom:1px solid rgba(201,169,110,0.25);}.nav-links.open{display:flex;}.nav-toggle{display:flex;}.footer-inner{grid-template-columns:1fr;}.footer-bottom{flex-direction:column;align-items:flex-start;}}
-    @media(max-width:480px){.cleaner-wrap{padding:2rem 1rem 4rem;}.cal-card{padding:1.25rem;}}
-
-  </style>
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
 
@@ -284,6 +155,10 @@
 
   <script>
 
+    var WORKER_URL = 'https://ical-proxy.21webstudios.workers.dev';
+    var ICAL_319 = 'https://www.airbnb.com/calendar/ical/1489304305482963659.ics?t=3ea7ebbda60c4f2398f0bd97efa666c0';
+    var ICAL_322 = 'https://www.airbnb.com/calendar/ical/592176990035326624.ics?t=7164eba6576e433abcfc8699d30442e3';
+
     // ── GATE ──
     function tryEnter() {
       if (document.getElementById('gate-input').value === 'sandra') {
@@ -357,15 +232,12 @@
     });
 
     // ── iCAL FETCH ──
-    var ICAL_319 = 'https://www.airbnb.com/calendar/ical/1489304305482963659.ics?t=3ea7ebbda60c4f2398f0bd97efa666c0';
-    var ICAL_322 = 'https://www.airbnb.com/calendar/ical/592176990035326624.ics?t=7164eba6576e433abcfc8699d30442e3';
-
-    async function fetchBookings(url) {
+    async function fetchBookings(icalUrl) {
       var checkins = new Set(), checkouts = new Set(), occupied = new Set();
       try {
-        var res  = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent(url));
-        var data = await res.json();
-        var lines = data.contents.split('\n');
+        var res   = await fetch(WORKER_URL + '?url=' + encodeURIComponent(icalUrl));
+        var text  = await res.text();
+        var lines = text.split('\n');
         var inEv = false, st = null, en = null;
         for (var i = 0; i < lines.length; i++) {
           var ln = lines[i].trim();
