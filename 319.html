@@ -15,7 +15,9 @@
       <span>Lauderdale-by-the-Sea, Florida</span>
     </a>
     <ul class="nav-links" id="nav-links">
-      <li><a href="319.html" class="active">Unit #319</a></li><li><a href="322.html">Unit #322</a></li><li><a href="calendar-events.html">Calendar &amp; Events</a></li>
+      <li><a href="319.html" class="active">Unit #319</a></li>
+      <li><a href="322.html">Unit #322</a></li>
+      <li><a href="calendar-events.html">Calendar &amp; Events</a></li>
       <li><button id="nav-contact-btn">Contact</button></li>
     </ul>
     <button class="nav-toggle" id="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -328,6 +330,7 @@ The lit slider on each switch can be slid up or down with a finger to brighten o
           <div class="cal-legend">
             <span><span class="cal-legend-dot" style="background:rgba(201,169,110,0.3);"></span>Available</span>
             <span><span class="cal-legend-dot" style="background:rgba(42,107,138,0.15);"></span>Booked</span>
+            <span><span class="cal-legend-dot" style="background:rgba(94,130,110,0.3);"></span>Coming Soon</span>
           </div>
         </div>
       </div>
@@ -485,38 +488,16 @@ The lit slider on each switch can be slid up or down with a finger to brighten o
       document.getElementById('photo-modal-inner').innerHTML = '<img src="' + allPhotos[currentPhotoIndex] + '" alt="photo ' + (currentPhotoIndex + 1) + '" style="width:100%;max-height:85vh;object-fit:contain;display:block;margin:0 auto;"/>';
       document.getElementById('photo-modal-counter').textContent = (currentPhotoIndex + 1) + ' of ' + allPhotos.length;
     }
-
-    function openPhotoModal() {
-      showPhoto(0);
-      photoModal.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    }
+    function openPhotoModal() { showPhoto(0); photoModal.classList.add('open'); document.body.style.overflow = 'hidden'; }
 
     document.getElementById('show-all-btn').addEventListener('click', function(e) { e.stopPropagation(); openPhotoModal(); });
     document.getElementById('photo-grid').addEventListener('click', openPhotoModal);
-
-    document.getElementById('photo-modal-close').addEventListener('click', function() {
-      photoModal.classList.remove('open');
-      document.body.style.overflow = '';
-    });
-
-    document.getElementById('photo-modal-prev').addEventListener('click', function(e) {
-      e.stopPropagation();
-      showPhoto(currentPhotoIndex - 1);
-    });
-
-    document.getElementById('photo-modal-next').addEventListener('click', function(e) {
-      e.stopPropagation();
-      showPhoto(currentPhotoIndex + 1);
-    });
-
+    document.getElementById('photo-modal-close').addEventListener('click', function() { photoModal.classList.remove('open'); document.body.style.overflow = ''; });
+    document.getElementById('photo-modal-prev').addEventListener('click', function(e) { e.stopPropagation(); showPhoto(currentPhotoIndex - 1); });
+    document.getElementById('photo-modal-next').addEventListener('click', function(e) { e.stopPropagation(); showPhoto(currentPhotoIndex + 1); });
     photoModal.addEventListener('click', function(e) {
-      if (e.target === this || e.target === document.getElementById('photo-modal-inner')) {
-        this.classList.remove('open');
-        document.body.style.overflow = '';
-      }
+      if (e.target === this || e.target === document.getElementById('photo-modal-inner')) { this.classList.remove('open'); document.body.style.overflow = ''; }
     });
-
     document.addEventListener('keydown', function(e) {
       if (!photoModal.classList.contains('open')) return;
       if (e.key === 'ArrowLeft')  { showPhoto(currentPhotoIndex - 1); }
@@ -547,47 +528,62 @@ The lit slider on each switch can be slid up or down with a finger to brighten o
       }
     });
     document.querySelectorAll('.instr-thumb img').forEach(function(img) {
-      img.addEventListener('error', function() {
-        var parent = img.parentElement;
-        if (parent) parent.classList.add('image-missing');
-      });
-      if (img.complete && img.naturalWidth === 0) {
-        var parent = img.parentElement;
-        if (parent) parent.classList.add('image-missing');
-      }
+      img.addEventListener('error', function() { var p = img.parentElement; if (p) p.classList.add('image-missing'); });
+      if (img.complete && img.naturalWidth === 0) { var p = img.parentElement; if (p) p.classList.add('image-missing'); }
     });
     document.querySelectorAll('.guest-photo img').forEach(function(img) {
-      img.addEventListener('error', function() {
-        var parent = img.parentElement;
-        if (parent) parent.classList.add('image-missing');
-      });
-      if (img.complete && img.naturalWidth === 0) {
-        var parent = img.parentElement;
-        if (parent) parent.classList.add('image-missing');
-      }
+      img.addEventListener('error', function() { var p = img.parentElement; if (p) p.classList.add('image-missing'); });
+      if (img.complete && img.naturalWidth === 0) { var p = img.parentElement; if (p) p.classList.add('image-missing'); }
     });
 
-    // Calendar
+    // Calendar — stable 6-row grid, coming soon for dates > 1 year out
     var WORKER_URL = 'https://ical-proxy.21webstudios.workers.dev';
     var calOffset = 0, calBooked = new Set();
+
     function renderCal() {
-      var today = new Date(), d = new Date(today.getFullYear(), today.getMonth() + calOffset, 1);
-      document.getElementById('cal-month').textContent = d.toLocaleString('default', {month:'long',year:'numeric'}).toUpperCase();
+      var today = new Date();
+      var oneYearOut = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+      var d = new Date(today.getFullYear(), today.getMonth() + calOffset, 1);
+      document.getElementById('cal-month').textContent = d.toLocaleString('default', {month:'long', year:'numeric'}).toUpperCase();
+
       var html = '';
       ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(function(day) { html += '<div class="cal-day-header">' + day + '</div>'; });
+
       var fd = new Date(d.getFullYear(), d.getMonth(), 1).getDay();
-      for (var i = 0; i < fd; i++) html += '<div class="cal-day"></div>';
       var dim = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
-      for (var day = 1; day <= dim; day++) {
-        var ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
-        var past = new Date(ds) < today, booked = calBooked.has(ds);
-        html += '<div class="cal-day' + (past ? ' past' : booked ? ' booked' : ' available') + '">' + day + '</div>';
+
+      // Always render exactly 42 cells (6 rows) to keep nav arrows stable
+      var totalCells = 42;
+      var dayCells = totalCells - fd;
+
+      for (var i = 0; i < fd; i++) html += '<div class="cal-day"></div>';
+
+      for (var day = 1; day <= dayCells; day++) {
+        if (day > dim) {
+          // Padding cells for 6th row — blank, no number
+          html += '<div class="cal-day"></div>';
+        } else {
+          var ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+          var dateObj = new Date(ds + 'T12:00:00');
+          var isPast = dateObj < today;
+          var isBooked = calBooked.has(ds);
+          var isFuture = dateObj >= oneYearOut;
+          var cls;
+          if (isPast)        cls = 'past';
+          else if (isBooked) cls = 'booked';
+          else if (isFuture) cls = 'coming-soon';
+          else               cls = 'available';
+          html += '<div class="cal-day ' + cls + '">' + day + '</div>';
+        }
       }
+
       document.getElementById('cal-grid').innerHTML = html;
     }
+
     function prevMonth() { calOffset--; renderCal(); }
     function nextMonth() { calOffset++; renderCal(); }
     renderCal();
+
     (async function() {
       try {
         var icalUrl = 'https://www.airbnb.com/calendar/ical/1489304305482963659.ics?t=3ea7ebbda60c4f2398f0bd97efa666c0';
@@ -599,7 +595,7 @@ The lit slider on each switch can be slid up or down with a finger to brighten o
           var line = lines[i];
           if (line.startsWith('BEGIN:VEVENT')) { inEv = true; st = null; en = null; }
           if (inEv && line.startsWith('DTSTART')) st = line.split(':')[1].trim().substring(0,8);
-          if (inEv && line.startsWith('DTEND')) en = line.split(':')[1].trim().substring(0,8);
+          if (inEv && line.startsWith('DTEND'))   en = line.split(':')[1].trim().substring(0,8);
           if (line.startsWith('END:VEVENT') && st && en) {
             var dd = new Date(st.substring(0,4)+'-'+st.substring(4,6)+'-'+st.substring(6,8));
             var ed = new Date(en.substring(0,4)+'-'+en.substring(4,6)+'-'+en.substring(6,8));
