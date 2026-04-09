@@ -9,17 +9,25 @@
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
+
+  <!-- NAV -->
   <nav id="site-nav">
     <a class="nav-logo" href="index.html">
       BeachfrontStudioRentals.com
       <span>Lauderdale-by-the-Sea, Florida</span>
     </a>
     <ul class="nav-links" id="nav-links">
-      <li><a href="319.html">Unit #319</a></li><li><a href="322.html">Unit #322</a></li><li><a href="calendar-events.html">Calendar &amp; Events</a></li>
+      <li><a href="319.html">Unit #319</a></li>
+      <li><a href="322.html">Unit #322</a></li>
+      <li><a href="calendar-events.html">Calendar &amp; Events</a></li>
       <li><button id="nav-contact-btn">Contact</button></li>
     </ul>
-    <button class="nav-toggle" id="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </nav>
+
+  <!-- CONTACT MODAL -->
   <div class="contact-modal" id="contact-modal">
     <div class="contact-box">
       <button class="contact-box-close" id="contact-modal-close">&times;</button>
@@ -53,6 +61,7 @@
     </div>
   </div>
 
+  <!-- HERO -->
   <section class="hero">
     <div class="hero-slide active" style="background-image:url('images/hero-1.jpg')"></div>
     <div class="hero-slide" style="background-image:url('images/hero-2.jpg')"></div>
@@ -68,6 +77,7 @@
     </div>
   </section>
 
+  <!-- UNITS -->
   <section class="units" id="units">
     <p class="section-label">Our Units</p>
     <h2 class="section-title">Two Studios, One Beach</h2>
@@ -81,7 +91,7 @@
         <div class="unit-body">
           <p class="unit-number">Studio &middot; 3rd Floor &middot; Oceanfront</p>
           <h3 class="unit-name">Oceanfront Retreat</h3>
-          <p class="unit-desc">Direct oceanfront studio with sunrise views over the Atlantic. Step outside and you are on the sand — no street to cross, no parking lot to walk through.</p>
+          <p class="unit-desc">Direct oceanfront studio with sunrise views over the Atlantic. Step outside and you are on the sand &mdash; no street to cross, no parking lot to walk through.</p>
           <div class="unit-features">
             <span class="unit-feature">Direct Oceanfront</span>
             <span class="unit-feature">Sunrise Views</span>
@@ -118,6 +128,7 @@
     </div>
   </section>
 
+  <!-- BOOK DIRECT -->
   <section class="book-direct">
     <p class="section-label" style="color:var(--gold);">Why Book Direct?</p>
     <h2>Save the Fees. Book With Confidence.</h2>
@@ -128,6 +139,7 @@
     </div>
   </section>
 
+  <!-- LOCATION -->
   <section class="location">
     <div class="location-text">
       <p class="section-label">Location</p>
@@ -155,12 +167,13 @@
         <div class="loc-divider"></div>
         <span class="loc-address">Lauderdale-by-the-Sea &middot; Broward County &middot; Florida</span>
       </div>
-      <div class="location-map-placeholder">
+      <div class="location-map">
         <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3579.5207369690393!2d-80.0918973!3d26.212264399999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d8fd8407db7993%3A0x29782f8b338330ba!2s1480%20S%20Ocean%20Blvd%2C%20Pompano%20Beach%2C%20FL%2033062!5e0!3m2!1sen!2sus!4v1775574639412!5m2!1sen!2sus" width="100%" height="300" style="border:0;display:block;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
     </div>
   </section>
 
+  <!-- FOOTER -->
   <footer>
     <div class="footer-inner">
       <div class="footer-brand">
@@ -190,51 +203,79 @@
     </div>
   </footer>
 
+  <!-- SCRIPTS -->
   <script>
     document.getElementById('nav-toggle').addEventListener('click', function() {
       document.getElementById('nav-links').classList.toggle('open');
     });
     document.querySelectorAll('.nav-links a').forEach(function(a) {
-      a.addEventListener('click', function() { document.getElementById('nav-links').classList.remove('open'); });
+      a.addEventListener('click', function() {
+        document.getElementById('nav-links').classList.remove('open');
+      });
     });
+
     function openContactModal() {
       document.getElementById('contact-form').style.display = 'flex';
       document.getElementById('contact-success').style.display = 'none';
       document.getElementById('contact-modal').classList.add('open');
       document.body.style.overflow = 'hidden';
     }
+
     document.getElementById('nav-contact-btn').addEventListener('click', openContactModal);
     document.getElementById('footer-contact-btn').addEventListener('click', openContactModal);
+    document.getElementById('book-direct-contact-btn').addEventListener('click', openContactModal);
+
     document.getElementById('contact-modal-close').addEventListener('click', function() {
       document.getElementById('contact-modal').classList.remove('open');
       document.body.style.overflow = '';
     });
     document.getElementById('contact-modal').addEventListener('click', function(e) {
-      if (e.target === this) { this.classList.remove('open'); document.body.style.overflow = ''; }
+      if (e.target === this) {
+        this.classList.remove('open');
+        document.body.style.overflow = '';
+      }
     });
+
     var prefSel = document.getElementById('contact-pref');
-    var phoneF = document.getElementById('contact-phone');
-    var nudge = document.getElementById('contact-nudge');
+    var phoneF  = document.getElementById('contact-phone');
+    var nudge   = document.getElementById('contact-nudge');
     function checkNudge() {
-      nudge.style.display = ((prefSel.value==='Text'||prefSel.value==='Phone call') && !phoneF.value.trim()) ? 'block' : 'none';
+      nudge.style.display = ((prefSel.value === 'Text' || prefSel.value === 'Phone call') && !phoneF.value.trim()) ? 'block' : 'none';
     }
     prefSel.addEventListener('change', checkNudge);
     phoneF.addEventListener('input', checkNudge);
+
     document.getElementById('contact-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       var btn = this.querySelector('.contact-submit');
-      btn.textContent = 'Sending...'; btn.disabled = true;
+      btn.textContent = 'Sending...';
+      btn.disabled = true;
       try {
-        var r = await fetch('https://api.web3forms.com/submit', {method:'POST', body:new FormData(this)});
+        var r = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(this) });
         var j = await r.json();
-        if (j.success) { this.style.display='none'; document.getElementById('contact-success').style.display='block'; }
-        else { btn.textContent='Send Inquiry →'; btn.disabled=false; alert('Something went wrong.'); }
-      } catch(err) { btn.textContent='Send Inquiry →'; btn.disabled=false; alert('Something went wrong.'); }
+        if (j.success) {
+          this.style.display = 'none';
+          document.getElementById('contact-success').style.display = 'block';
+        } else {
+          btn.textContent = 'Send Inquiry →';
+          btn.disabled = false;
+          alert('Something went wrong.');
+        }
+      } catch(err) {
+        btn.textContent = 'Send Inquiry →';
+        btn.disabled = false;
+        alert('Something went wrong.');
+      }
     });
-    document.getElementById('book-direct-contact-btn').addEventListener('click', openContactModal);
-    const slides=document.querySelectorAll('.hero-slide');
-    let current=0;
-    setInterval(()=>{slides[current].classList.remove('active');current=(current+1)%slides.length;slides[current].classList.add('active');},6000);
+
+    const slides = document.querySelectorAll('.hero-slide');
+    let current = 0;
+    setInterval(() => {
+      slides[current].classList.remove('active');
+      current = (current + 1) % slides.length;
+      slides[current].classList.add('active');
+    }, 6000);
   </script>
+
 </body>
 </html>
