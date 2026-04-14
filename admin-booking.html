@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Admin &middot; Booking Lookup &middot; BeachfrontStudioRentals.com</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+
+    /* ── Gate ────────────────────────────────────── */
+    .gate {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--deep);
+      padding: 2rem;
+    }
+    .gate-box {
+      background: #fff;
+      border-radius: 2px;
+      max-width: 360px;
+      width: 100%;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      box-shadow: 0 8px 48px rgba(26,42,50,0.3);
+    }
+    .gate-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: 1.1rem;
+      color: var(--deep);
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+    }
+    .gate-sub {
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.7rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.75rem;
+    }
+    .gate-box input[type="password"] {
+      width: 100%;
+      box-sizing: border-box;
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 1rem;
+      color: var(--deep);
+      background: #faf9f7;
+      border: 1px solid rgba(42,67,80,0.2);
+      border-radius: 1px;
+      padding: 0.7rem 0.9rem;
+      outline: none;
+      text-align: center;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.85rem;
+    }
+    .gate-box input[type="password"]:focus { border-color: var(--ocean); background: #fff; }
+    .gate-btn {
+      display: block;
+      width: 100%;
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #fff;
+      background: var(--ocean);
+      border: none;
+      border-radius: 1px;
+      padding: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .gate-btn:hover { background: var(--deep); }
+    .gate-error {
+      display: none;
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.8rem;
+      color: #8b2020;
+      margin-top: 0.75rem;
+    }
+
+    /* ── Main (hidden until unlocked) ───────────── */
+    #main { display: none; }
+
+    .admin-hero {
+      background: var(--deep);
+      color: var(--sand);
+      padding: 5rem 1.5rem 3rem;
+      text-align: center;
+    }
+    .admin-hero-eyebrow {
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 0 0 0.85rem;
+    }
+    .admin-hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      margin: 0;
+      line-height: 1.15;
+    }
+
+    .admin-wrap {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+    }
+
+    /* ── Card ────────────────────────────────────── */
+    .admin-card {
+      background: #fff;
+      border: 1px solid rgba(201,169,110,0.2);
+      border-radius: 2px;
+      padding: 2rem;
+      box-shadow: 0 2px 20px rgba(42,67,80,0.07);
+      margin-bottom: 2rem;
+    }
+    .admin-card-title {
+      font-family: 'Jost', sans-serif;
+      font-weight: 500;
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 0 0 1.25rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(201,169,110,0.25);
+    }
+
+    /* ── Fields ──────────────────────────────────── */
+    .a-field {
+      margin-bottom: 1rem;
+    }
+    .a-field label {
+      display: block;
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      color: var(--deep);
+      margin-bottom: 0.35rem;
+    }
+    .a-field input {
+      width: 100%;
+      box-sizing: border-box;
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.95rem;
+      color: var(--deep);
+      background: #faf9f7;
+      border: 1px solid rgba(42,67,80,0.18);
+      border-radius: 1px;
+      padding: 0.65rem 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .a-field input:focus { border-color: var(--ocean); background: #fff; }
+
+    .a-field-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+    }
+    @media (max-width: 500px) {
+      .a-field-pair { grid-template-columns: 1fr; }
+      .admin-card { padding: 1.5rem 1.25rem; }
+    }
+
+    /* ── Buttons ─────────────────────────────────── */
+    .a-btn {
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #fff;
+      background: var(--ocean);
+      border: none;
+      border-radius: 1px;
+      padding: 0.75rem 1.5rem;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s;
+    }
+    .a-btn:hover { background: var(--deep); }
+    .a-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .a-btn-gold {
+      background: var(--gold);
+      color: var(--deep);
+    }
+    .a-btn-gold:hover { background: #b8943a; color: #fff; }
+
+    /* ── Booking detail panel ────────────────────── */
+    .booking-detail {
+      display: none;
+      margin-top: 1.5rem;
+      border-top: 1px solid rgba(201,169,110,0.2);
+      padding-top: 1.5rem;
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 500px) { .detail-grid { grid-template-columns: 1fr; } }
+    .detail-item .dl {
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(42,67,80,0.45);
+      margin-bottom: 0.15rem;
+    }
+    .detail-item .dv {
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.92rem;
+      color: var(--deep);
+    }
+
+    /* ── Pricing breakdown ───────────────────────── */
+    .pricing-table {
+      background: #faf9f7;
+      border: 1px solid rgba(201,169,110,0.18);
+      border-radius: 1px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    .pricing-row {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.88rem;
+      color: var(--deep);
+      padding: 0.3rem 0;
+    }
+    .pricing-row.total {
+      font-weight: 500;
+      border-top: 1px solid rgba(201,169,110,0.3);
+      margin-top: 0.4rem;
+      padding-top: 0.6rem;
+      font-size: 0.95rem;
+    }
+
+    /* ── Banners ─────────────────────────────────── */
+    .a-error {
+      display: none;
+      background: rgba(180,50,50,0.08);
+      border: 1px solid rgba(180,50,50,0.3);
+      border-radius: 2px;
+      color: #8b2020;
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.875rem;
+      padding: 0.75rem 1rem;
+      margin-top: 1rem;
+      line-height: 1.5;
+    }
+    .a-success-banner {
+      display: none;
+      background: rgba(42,107,138,0.08);
+      border: 1px solid rgba(42,107,138,0.3);
+      border-radius: 2px;
+      color: var(--ocean);
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.875rem;
+      padding: 0.75rem 1rem;
+      margin-top: 1rem;
+      line-height: 1.5;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- GATE -->
+  <div class="gate" id="gate">
+    <div class="gate-box">
+      <div class="gate-logo">BeachfrontStudioRentals.com</div>
+      <div class="gate-sub">Admin Access</div>
+      <input type="password" id="gate-input" placeholder="Password" autocomplete="current-password"/>
+      <button class="gate-btn" id="gate-btn">Enter</button>
+      <p class="gate-error" id="gate-error">Incorrect password.</p>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+
+    <!-- NAV -->
+    <nav id="site-nav">
+      <a class="nav-logo" href="index.html">
+        BeachfrontStudioRentals.com
+        <span>Lauderdale-by-the-Sea, Florida</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="319.html">Unit #319</a></li>
+        <li><a href="322.html">Unit #322</a></li>
+        <li><a href="calendar-events.html">Calendar &amp; Events</a></li>
+        <li><button id="nav-contact-btn">Contact</button></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    </nav>
+
+    <!-- CONTACT MODAL -->
+    <div class="contact-modal" id="contact-modal">
+      <div class="contact-box">
+        <button class="contact-box-close" id="contact-modal-close">&times;</button>
+        <p class="contact-box-eyebrow">Get in Touch</p>
+        <h2 class="contact-box-title">Send a Direct Inquiry</h2>
+        <form class="contact-form" id="contact-form">
+          <input type="hidden" name="access_key" value="ede3a035-f85a-4089-bf98-8eaeab408e15"/>
+          <input type="hidden" name="subject" value="New Inquiry from BeachfrontStudioRentals.com"/>
+          <input type="hidden" name="from_name" value="BeachfrontStudioRentals.com"/>
+          <input type="text" name="name" placeholder="Your Name *" required/>
+          <input type="email" name="email" placeholder="Email Address *" required/>
+          <input type="tel" name="phone" id="contact-phone" placeholder="Phone Number (optional)"/>
+          <select name="contact_preference" id="contact-pref">
+            <option value="">Best way to reach you...</option>
+            <option value="Email">Email</option>
+            <option value="Text">Text</option>
+            <option value="Phone call">Phone call</option>
+          </select>
+          <div class="contact-nudge" id="contact-nudge">Looks like you didn't add a phone number &mdash; drop it above and we'll reach out that way.</div>
+          <div class="date-row">
+            <input type="date" name="checkin"/>
+            <input type="date" name="checkout"/>
+          </div>
+          <textarea name="message" placeholder="Tell us about your stay..."></textarea>
+          <button type="submit" class="contact-submit">Send Inquiry &rarr;</button>
+        </form>
+        <div class="contact-success" id="contact-success">
+          <div class="check">&#10003;</div>
+          <p>Thank you &mdash; your message is on its way. We'll be in touch shortly.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- HERO -->
+    <div class="admin-hero">
+      <p class="admin-hero-eyebrow">BeachfrontStudioRentals.com &middot; Admin</p>
+      <h1>Booking Lookup</h1>
+    </div>
+
+    <div class="admin-wrap">
+
+      <!-- LOOKUP CARD -->
+      <div class="admin-card">
+        <p class="admin-card-title">Look Up a Booking</p>
+
+        <div class="a-field">
+          <label>Booking ID</label>
+          <input type="text" id="lookup-id" placeholder="BSR-YYYYMMDD-XXXX"/>
+        </div>
+        <button class="a-btn" id="lookup-btn">Look Up &rarr;</button>
+        <div class="a-error" id="lookup-error"></div>
+
+        <!-- Booking detail — shown after successful lookup -->
+        <div class="booking-detail" id="booking-detail">
+
+          <div class="detail-grid" id="detail-grid"></div>
+
+          <div class="admin-card-title">Override &amp; Resend Contract</div>
+
+          <div class="a-field-pair">
+            <div class="a-field">
+              <label>Override Nightly Rate ($)</label>
+              <input type="number" id="override-rate" placeholder="e.g. 185" min="0" step="0.01"/>
+            </div>
+            <div class="a-field" style="display:flex;align-items:flex-end;">
+              <button class="a-btn" id="calculate-btn" style="width:100%;">Calculate &rarr;</button>
+            </div>
+          </div>
+          <div class="a-error" id="calculate-error"></div>
+
+          <!-- Pricing preview — shown after Calculate -->
+          <div id="pricing-preview" style="display:none;">
+            <div class="pricing-table" id="pricing-table"></div>
+            <button class="a-btn a-btn-gold" id="send-contract-btn">Send Contract to Guest &rarr;</button>
+            <div class="a-error" id="override-error"></div>
+            <div class="a-success-banner" id="override-success"></div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="footer-logo">BeachfrontStudioRentals.com</div>
+          <p>Two private oceanfront studio residences on the Atlantic in Lauderdale-by-the-Sea, Florida. Book direct for the best rate &mdash; no fees, no middleman.</p>
+          <p class="footer-legal">Units #319 and #322 are privately owned and independently managed. BeachfrontStudioRentals.com is a direct-booking site operated by the unit owners. This site is not affiliated with Airbnb, VRBO, or any third-party booking platform.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Our Units</h4>
+          <ul>
+            <li><a href="319.html">Unit #319 &mdash; Oceanfront Retreat</a></li>
+            <li><a href="322.html">Unit #322 &mdash; Corner Studio</a></li>
+            <li><a href="calendar-events.html">Calendar &amp; Events</a></li>
+            <li><a href="index.html">Home</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Book Direct</h4>
+          <ul>
+            <li><button class="btn-link" id="footer-contact-btn">Contact Us</button></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; BeachfrontStudioRentals.com &middot; Lauderdale-by-the-Sea, Florida</p>
+        <p class="footer-credit">A <a href="https://21webstudios.com" target="_blank">21WebStudios.com</a> production</p>
+      </div>
+    </footer>
+
+  </div><!-- /#main -->
+
+  <script>
+
+    var WORKER_URL     = 'https://contract-sender.21webstudios.workers.dev';
+    var ADMIN_PASSWORD = 'hensonbennett2129';
+
+    var currentBooking    = null;  // full booking record from /admin/lookup
+    var calculatedPricing = null;  // pricing object from /admin/calculate
+
+    // ── Gate ──────────────────────────────────────────────
+    function tryEnter() {
+      if (document.getElementById('gate-input').value === ADMIN_PASSWORD) {
+        document.getElementById('gate').style.display = 'none';
+        document.getElementById('main').style.display = 'block';
+      } else {
+        document.getElementById('gate-error').style.display = 'block';
+        document.getElementById('gate-input').value = '';
+        document.getElementById('gate-input').focus();
+      }
+    }
+    document.getElementById('gate-btn').addEventListener('click', tryEnter);
+    document.getElementById('gate-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') tryEnter();
+    });
+
+    // ── Nav toggle ────────────────────────────────────────
+    document.getElementById('nav-toggle').addEventListener('click', function() {
+      document.getElementById('nav-links').classList.toggle('open');
+    });
+    document.querySelectorAll('.nav-links a').forEach(function(a) {
+      a.addEventListener('click', function() {
+        document.getElementById('nav-links').classList.remove('open');
+      });
+    });
+
+    // ── Contact modal ─────────────────────────────────────
+    function openContactModal() {
+      document.getElementById('contact-form').style.display = 'flex';
+      document.getElementById('contact-success').style.display = 'none';
+      document.getElementById('contact-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    document.getElementById('nav-contact-btn').addEventListener('click', openContactModal);
+    document.getElementById('footer-contact-btn').addEventListener('click', openContactModal);
+    document.getElementById('contact-modal-close').addEventListener('click', function() {
+      document.getElementById('contact-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    });
+    document.getElementById('contact-modal').addEventListener('click', function(e) {
+      if (e.target === this) { this.classList.remove('open'); document.body.style.overflow = ''; }
+    });
+
+    var prefSel = document.getElementById('contact-pref');
+    var phoneF  = document.getElementById('contact-phone');
+    var nudge   = document.getElementById('contact-nudge');
+    function checkNudge() {
+      nudge.style.display = ((prefSel.value === 'Text' || prefSel.value === 'Phone call') && !phoneF.value.trim()) ? 'block' : 'none';
+    }
+    prefSel.addEventListener('change', checkNudge);
+    phoneF.addEventListener('input', checkNudge);
+
+    document.getElementById('contact-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var btn = this.querySelector('.contact-submit');
+      btn.textContent = 'Sending...'; btn.disabled = true;
+      try {
+        var r = await fetch('https://api.web3forms.com/submit', { method: 'POST', body: new FormData(this) });
+        var j = await r.json();
+        if (j.success) { this.style.display = 'none'; document.getElementById('contact-success').style.display = 'block'; }
+        else { btn.textContent = 'Send Inquiry →'; btn.disabled = false; alert('Something went wrong. Please try again.'); }
+      } catch(err) { btn.textContent = 'Send Inquiry →'; btn.disabled = false; alert('Something went wrong. Please try again.'); }
+    });
+
+    // ── Lookup ────────────────────────────────────────────
+    document.getElementById('lookup-btn').addEventListener('click', async function() {
+      var errorEl = document.getElementById('lookup-error');
+      errorEl.style.display = 'none';
+      errorEl.textContent = '';
+
+      var bookingId = document.getElementById('lookup-id').value.trim().toUpperCase();
+      if (!bookingId) {
+        errorEl.textContent = 'Please enter a Booking ID.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      // Reset all downstream state
+      document.getElementById('booking-detail').style.display = 'none';
+      document.getElementById('pricing-preview').style.display = 'none';
+      document.getElementById('calculate-error').style.display = 'none';
+      document.getElementById('override-error').style.display = 'none';
+      document.getElementById('override-success').style.display = 'none';
+      document.getElementById('override-rate').value = '';
+      currentBooking    = null;
+      calculatedPricing = null;
+
+      var btn = this;
+      btn.textContent = 'Looking up...'; btn.disabled = true;
+
+      try {
+        var res = await fetch(WORKER_URL + '/admin/lookup', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ password: ADMIN_PASSWORD, bookingId: bookingId })
+        });
+        var data = await res.json();
+
+        if (!res.ok || !data.success) {
+          errorEl.textContent = (data && data.error) ? data.error : 'Booking not found.';
+          errorEl.style.display = 'block';
+          btn.textContent = 'Look Up →'; btn.disabled = false;
+          return;
+        }
+
+        currentBooking = data.booking;
+        renderBookingDetail(data.booking);
+        document.getElementById('booking-detail').style.display = 'block';
+        btn.textContent = 'Look Up →'; btn.disabled = false;
+
+      } catch(err) {
+        errorEl.textContent = 'Unable to reach the booking server. Please try again.';
+        errorEl.style.display = 'block';
+        btn.textContent = 'Look Up →'; btn.disabled = false;
+      }
+    });
+
+    function renderBookingDetail(b) {
+      var g = b.guest;
+      var r = b.reservation;
+      var p = b.pricing;
+
+      function row(label, value) {
+        return '<div class="detail-item"><div class="dl">' + label + '</div><div class="dv">' + (value || '&mdash;') + '</div></div>';
+      }
+
+      var address = [g.address, g.city, g.state, g.zip].filter(Boolean).join(', ');
+
+      document.getElementById('detail-grid').innerHTML =
+        row('Booking ID',    b.bookingId) +
+        row('Unit',          r.unit ? 'Unit #' + r.unit.replace(/\D/g, '') : '') +
+        row('Guest',         g.full_name) +
+        row('Email',         g.email) +
+        row('Phone',         g.phone) +
+        row('Check-in',      r.checkin_date) +
+        row('Check-out',     r.checkout_date) +
+        row('Guests',        g.num_guests) +
+        row('Address',       address) +
+        row('Nights',        p ? String(p.nights) : '') +
+        row('Subtotal',      p ? '$' + p.subtotal.toFixed(2) : '') +
+        row('Tax',           p ? '$' + p.tax.toFixed(2) : '') +
+        row('Total',         p ? '$' + p.total.toFixed(2) : '') +
+        row('Deposit (50%)', p ? '$' + p.deposit.toFixed(2) : '') +
+        row('Balance',       p ? '$' + p.balance.toFixed(2) : '');
+    }
+
+    // ── Calculate — calls /admin/calculate (no contract sent) ─────────
+    document.getElementById('calculate-btn').addEventListener('click', async function() {
+      var errorEl = document.getElementById('calculate-error');
+      errorEl.style.display = 'none';
+      errorEl.textContent = '';
+      document.getElementById('pricing-preview').style.display = 'none';
+      document.getElementById('override-error').style.display = 'none';
+      document.getElementById('override-success').style.display = 'none';
+      calculatedPricing = null;
+
+      if (!currentBooking) {
+        errorEl.textContent = 'No booking loaded. Please look up a booking first.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      var rate = parseFloat(document.getElementById('override-rate').value);
+      if (!rate || rate <= 0) {
+        errorEl.textContent = 'Please enter a valid nightly rate greater than zero.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      var btn = this;
+      btn.textContent = 'Calculating...'; btn.disabled = true;
+
+      try {
+        var res = await fetch(WORKER_URL + '/admin/calculate', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            password:     ADMIN_PASSWORD,
+            bookingId:    currentBooking.bookingId,
+            overrideRate: rate
+          })
+        });
+        var data = await res.json();
+
+        if (!res.ok || !data.success) {
+          errorEl.textContent = (data && data.error) ? data.error : 'Calculation failed. Please try again.';
+          errorEl.style.display = 'block';
+          btn.textContent = 'Calculate →'; btn.disabled = false;
+          return;
+        }
+
+        calculatedPricing = data.pricing;
+        renderPricingPreview(data.pricing, rate);
+        document.getElementById('pricing-preview').style.display = 'block';
+
+        // Reset send button in case previously locked after a prior send
+        var sendBtn = document.getElementById('send-contract-btn');
+        sendBtn.textContent = 'Send Contract to Guest →';
+        sendBtn.disabled = false;
+
+        btn.textContent = 'Calculate →'; btn.disabled = false;
+
+      } catch(err) {
+        errorEl.textContent = 'Unable to reach the booking server. Please try again.';
+        errorEl.style.display = 'block';
+        btn.textContent = 'Calculate →'; btn.disabled = false;
+      }
+    });
+
+    function renderPricingPreview(p, rate) {
+      document.getElementById('pricing-table').innerHTML =
+        '<div class="pricing-row"><span>' + p.nights + ' night' + (p.nights !== 1 ? 's' : '') + ' &times; $' + Number(rate).toFixed(2) + '</span><span>$' + p.subtotal.toFixed(2) + '</span></div>' +
+        '<div class="pricing-row"><span>Tax (13%)</span><span>$' + p.tax.toFixed(2) + '</span></div>' +
+        '<div class="pricing-row total"><span>Total</span><span>$' + p.total.toFixed(2) + '</span></div>' +
+        '<div class="pricing-row"><span>Deposit due (50%)</span><span>$' + p.deposit.toFixed(2) + '</span></div>' +
+        '<div class="pricing-row"><span>Balance due</span><span>$' + p.balance.toFixed(2) + '</span></div>';
+    }
+
+    // ── Send Contract — calls /admin/override (fires real contract) ────
+    document.getElementById('send-contract-btn').addEventListener('click', async function() {
+      var errorEl   = document.getElementById('override-error');
+      var successEl = document.getElementById('override-success');
+      errorEl.style.display   = 'none';
+      successEl.style.display = 'none';
+
+      if (!currentBooking || !calculatedPricing) {
+        errorEl.textContent = 'Please look up a booking and calculate pricing before sending.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      var rate = parseFloat(document.getElementById('override-rate').value);
+      if (!rate || rate <= 0) {
+        errorEl.textContent = 'Override rate is missing. Please recalculate before sending.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      var btn = this;
+      btn.textContent = 'Sending...'; btn.disabled = true;
+
+      try {
+        var res = await fetch(WORKER_URL + '/admin/override', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            password:     ADMIN_PASSWORD,
+            bookingId:    currentBooking.bookingId,
+            overrideRate: rate
+          })
+        });
+        var data = await res.json();
+
+        if (res.ok && data.success) {
+          successEl.textContent = 'Contract sent to ' + currentBooking.guest.email + '. The guest will receive a SignWell signing link shortly.';
+          successEl.style.display = 'block';
+          btn.textContent = 'Contract Sent';
+          // Leave disabled — prevents accidental double-send
+        } else {
+          errorEl.textContent = (data && data.error) ? data.error : 'Something went wrong. Please try again.';
+          errorEl.style.display = 'block';
+          btn.textContent = 'Send Contract to Guest →'; btn.disabled = false;
+        }
+
+      } catch(err) {
+        errorEl.textContent = 'Unable to reach the booking server. Please try again.';
+        errorEl.style.display = 'block';
+        btn.textContent = 'Send Contract to Guest →'; btn.disabled = false;
+      }
+    });
+
+  </script>
+</body>
+</html>

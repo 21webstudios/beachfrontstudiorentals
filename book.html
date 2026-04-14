@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Book Direct &middot; BeachfrontStudioRentals.com &middot; Lauderdale-by-the-Sea</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+    .book-hero {
+      background: var(--deep);
+      color: var(--sand);
+      text-align: center;
+      padding: 5rem 1.5rem 3.5rem;
+    }
+    .book-hero-eyebrow {
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 0 0 1rem;
+    }
+    .book-hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin: 0 0 1rem;
+      line-height: 1.15;
+    }
+    .book-hero p {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 1rem;
+      color: rgba(245,240,230,0.75);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+    .book-wrap {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+    }
+    .book-card {
+      background: #fff;
+      border: 1px solid rgba(201,169,110,0.2);
+      border-radius: 2px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 2px 24px rgba(42,67,80,0.07);
+    }
+    .book-section-label {
+      font-family: 'Jost', sans-serif;
+      font-weight: 500;
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 0 0 1.2rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(201,169,110,0.25);
+    }
+    .book-section {
+      margin-bottom: 2rem;
+    }
+    .book-field {
+      margin-bottom: 1rem;
+    }
+    .book-field label {
+      display: block;
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      color: var(--deep);
+      margin-bottom: 0.35rem;
+    }
+    .book-field input,
+    .book-field select {
+      width: 100%;
+      box-sizing: border-box;
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.95rem;
+      color: var(--deep);
+      background: #faf9f7;
+      border: 1px solid rgba(42,67,80,0.18);
+      border-radius: 1px;
+      padding: 0.65rem 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .book-field input:focus,
+    .book-field select:focus {
+      border-color: var(--ocean);
+      background: #fff;
+    }
+    .book-field-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+    }
+    .book-field-trio {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 0.85rem;
+    }
+    @media (max-width: 520px) {
+      .book-field-pair { grid-template-columns: 1fr; }
+      .book-field-trio { grid-template-columns: 1fr; }
+      .book-card { padding: 1.75rem 1.25rem; }
+    }
+    .book-note {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.8rem;
+      color: rgba(42,67,80,0.55);
+      margin: -0.5rem 0 1.25rem;
+      line-height: 1.5;
+    }
+    .book-submit {
+      display: block;
+      width: 100%;
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #fff;
+      background: var(--ocean);
+      border: none;
+      border-radius: 1px;
+      padding: 1rem 2rem;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s;
+      margin-top: 0.5rem;
+    }
+    .book-submit:hover { background: var(--deep); }
+    .book-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    /* Success overlay */
+    .book-success-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(26,42,50,0.72);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .book-success-overlay.open {
+      display: flex;
+    }
+    .book-success-box {
+      background: #fff;
+      border-radius: 2px;
+      max-width: 480px;
+      width: 100%;
+      padding: 2.5rem 2rem 2rem;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 8px 48px rgba(26,42,50,0.22);
+    }
+    .book-success-close {
+      position: absolute;
+      top: 1rem;
+      right: 1.1rem;
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--deep);
+      cursor: pointer;
+      line-height: 1;
+      opacity: 0.5;
+    }
+    .book-success-close:hover { opacity: 1; }
+    .book-success-check {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(42,107,138,0.1);
+      color: var(--ocean);
+      font-size: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+    }
+    .book-success-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 1.6rem;
+      color: var(--deep);
+      margin: 0 0 0.75rem;
+    }
+    .book-success-msg {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.95rem;
+      color: rgba(42,67,80,0.75);
+      line-height: 1.7;
+      margin: 0 0 1.25rem;
+    }
+    .book-success-id {
+      font-family: 'Jost', sans-serif;
+      font-weight: 500;
+      font-size: 1rem;
+      color: var(--deep);
+      background: rgba(201,169,110,0.12);
+      border: 1px solid rgba(201,169,110,0.35);
+      border-radius: 2px;
+      padding: 0.6rem 1rem;
+      display: inline-block;
+      letter-spacing: 0.06em;
+    }
+
+    /* Error banner */
+    .book-error {
+      display: none;
+      background: rgba(180,50,50,0.08);
+      border: 1px solid rgba(180,50,50,0.3);
+      border-radius: 2px;
+      color: #8b2020;
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.875rem;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="site-nav">
+    <a class="nav-logo" href="index.html">
+      BeachfrontStudioRentals.com
+      <span>Lauderdale-by-the-Sea, Florida</span>
+    </a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="319.html">Unit #319</a></li>
+      <li><a href="322.html">Unit #322</a></li>
+      <li><a href="calendar-events.html">Calendar &amp; Events</a></li>
+      <li><button id="nav-contact-btn">Contact</button></li>
+    </ul>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </nav>
+
+  <!-- CONTACT MODAL -->
+  <div class="contact-modal" id="contact-modal">
+    <div class="contact-box">
+      <button class="contact-box-close" id="contact-modal-close">&times;</button>
+      <p class="contact-box-eyebrow">Get in Touch</p>
+      <h2 class="contact-box-title">Send a Direct Inquiry</h2>
+      <form class="contact-form" id="contact-form">
+        <input type="hidden" name="access_key" value="ede3a035-f85a-4089-bf98-8eaeab408e15"/>
+        <input type="hidden" name="subject" value="New Inquiry from BeachfrontStudioRentals.com"/>
+        <input type="hidden" name="from_name" value="BeachfrontStudioRentals.com"/>
+        <input type="text" name="name" placeholder="Your Name *" required/>
+        <input type="email" name="email" placeholder="Email Address *" required/>
+        <input type="tel" name="phone" id="contact-phone" placeholder="Phone Number (optional)"/>
+        <select name="contact_preference" id="contact-pref">
+          <option value="">Best way to reach you...</option>
+          <option value="Email">Email</option>
+          <option value="Text">Text</option>
+          <option value="Phone call">Phone call</option>
+        </select>
+        <div class="contact-nudge" id="contact-nudge">Looks like you didn't add a phone number &mdash; drop it above and we'll reach out that way.</div>
+        <div class="date-row">
+          <input type="date" name="checkin"/>
+          <input type="date" name="checkout"/>
+        </div>
+        <textarea name="message" placeholder="Tell us about your stay..."></textarea>
+        <button type="submit" class="contact-submit">Send Inquiry &rarr;</button>
+      </form>
+      <div class="contact-success" id="contact-success">
+        <div class="check">&#10003;</div>
+        <p>Thank you &mdash; your message is on its way. We'll be in touch shortly.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS OVERLAY -->
+  <div class="book-success-overlay" id="book-success-overlay">
+    <div class="book-success-box">
+      <button class="book-success-close" id="book-success-close">&times;</button>
+      <div class="book-success-check">&#10003;</div>
+      <h2 class="book-success-title">Booking Received</h2>
+      <p class="book-success-msg">Check your email &mdash; a rental agreement will arrive shortly for your signature.</p>
+      <div class="book-success-id" id="book-success-id"></div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="book-hero">
+    <p class="book-hero-eyebrow">BeachfrontStudioRentals.com &middot; Book Direct</p>
+    <h1>Reserve Your Stay</h1>
+    <p>Book directly with the owner &mdash; no platform fees, no middleman. Complete the form below and a rental agreement will be sent to you for signature.</p>
+  </div>
+
+  <!-- FORM -->
+  <div class="book-wrap">
+    <div class="book-card">
+
+      <div class="book-error" id="book-error"></div>
+
+      <div class="book-section">
+        <p class="book-section-label">Your Stay</p>
+        <div class="book-field">
+          <label>Unit *</label>
+          <select id="f-unit" required>
+            <option value="">Select a unit...</option>
+            <option value="319">Unit #319 &mdash; Oceanfront Retreat</option>
+            <option value="322">Unit #322 &mdash; Corner Studio</option>
+          </select>
+        </div>
+        <div class="book-field-pair">
+          <div class="book-field">
+            <label>Check-in Date *</label>
+            <input type="date" id="f-checkin" required/>
+          </div>
+          <div class="book-field">
+            <label>Check-out Date *</label>
+            <input type="date" id="f-checkout" required/>
+          </div>
+        </div>
+        <div class="book-field">
+          <label>Number of Guests *</label>
+          <select id="f-num-guests" required>
+            <option value="">Select...</option>
+            <option value="1">1 guest</option>
+            <option value="2">2 guests</option>
+            <option value="3">3 guests</option>
+            <option value="4">4 guests</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="book-section">
+        <p class="book-section-label">Primary Guest</p>
+        <div class="book-field">
+          <label>Full Name *</label>
+          <input type="text" id="f-full-name" placeholder="As it appears on your ID" required/>
+        </div>
+        <div class="book-field-pair">
+          <div class="book-field">
+            <label>Email Address *</label>
+            <input type="email" id="f-email" required/>
+          </div>
+          <div class="book-field">
+            <label>Phone Number *</label>
+            <input type="tel" id="f-phone" required/>
+          </div>
+        </div>
+        <div class="book-field">
+          <label>Street Address *</label>
+          <input type="text" id="f-address" required/>
+        </div>
+        <div class="book-field-trio">
+          <div class="book-field">
+            <label>City *</label>
+            <input type="text" id="f-city" required/>
+          </div>
+          <div class="book-field">
+            <label>State *</label>
+            <input type="text" id="f-state" maxlength="2" placeholder="FL" required/>
+          </div>
+          <div class="book-field">
+            <label>ZIP Code *</label>
+            <input type="text" id="f-zip" maxlength="10" required/>
+          </div>
+        </div>
+      </div>
+
+      <p class="book-note">By submitting this form you agree that a rental agreement will be sent to your email address via SignWell for electronic signature. Your booking is not confirmed until the agreement is signed.</p>
+
+      <button class="book-submit" id="book-submit-btn">Submit Booking Request &rarr;</button>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">BeachfrontStudioRentals.com</div>
+        <p>Two private oceanfront studio residences on the Atlantic in Lauderdale-by-the-Sea, Florida. Book direct for the best rate &mdash; no fees, no middleman.</p>
+        <p class="footer-legal">Units #319 and #322 are privately owned and independently managed. BeachfrontStudioRentals.com is a direct-booking site operated by the unit owners. This site is not affiliated with Airbnb, VRBO, or any third-party booking platform.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Our Units</h4>
+        <ul>
+          <li><a href="319.html">Unit #319 &mdash; Oceanfront Retreat</a></li>
+          <li><a href="322.html">Unit #322 &mdash; Corner Studio</a></li>
+          <li><a href="calendar-events.html">Calendar &amp; Events</a></li>
+          <li><a href="index.html">Home</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Book Direct</h4>
+        <ul>
+          <li><button class="btn-link" id="footer-contact-btn">Contact Us</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; BeachfrontStudioRentals.com &middot; Lauderdale-by-the-Sea, Florida</p>
+      <p class="footer-credit">A <a href="https://21webstudios.com" target="_blank">21WebStudios.com</a> production</p>
+    </div>
+  </footer>
+
+  <script>
+
+    var WORKER_URL = 'https://contract-sender.21webstudios.workers.dev';
+
+    // Pre-select unit from query string (?unit=319 or ?unit=322)
+    (function() {
+      var params = new URLSearchParams(window.location.search);
+      var unit = params.get('unit');
+      if (unit === '319' || unit === '322') {
+        document.getElementById('f-unit').value = unit;
+      }
+    })();
+
+    // Nav toggle
+    document.getElementById('nav-toggle').addEventListener('click', function() {
+      document.getElementById('nav-links').classList.toggle('open');
+    });
+    document.querySelectorAll('.nav-links a').forEach(function(a) {
+      a.addEventListener('click', function() {
+        document.getElementById('nav-links').classList.remove('open');
+      });
+    });
+
+    // Contact modal
+    function openContactModal() {
+      document.getElementById('contact-form').style.display = 'flex';
+      document.getElementById('contact-success').style.display = 'none';
+      document.getElementById('contact-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    document.getElementById('nav-contact-btn').addEventListener('click', openContactModal);
+    document.getElementById('footer-contact-btn').addEventListener('click', openContactModal);
+    document.getElementById('contact-modal-close').addEventListener('click', function() {
+      document.getElementById('contact-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    });
+    document.getElementById('contact-modal').addEventListener('click', function(e) {
+      if (e.target === this) { this.classList.remove('open'); document.body.style.overflow = ''; }
+    });
+
+    // Contact form nudge
+    var prefSel = document.getElementById('contact-pref');
+    var phoneF  = document.getElementById('contact-phone');
+    var nudge   = document.getElementById('contact-nudge');
+    function checkNudge() {
+      nudge.style.display = ((prefSel.value === 'Text' || prefSel.value === 'Phone call') && !phoneF.value.trim()) ? 'block' : 'none';
+    }
+    prefSel.addEventListener('change', checkNudge);
+    phoneF.addEventListener('input', checkNudge);
+
+    // Contact form submit
+    document.getElementById('contact-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var btn = this.querySelector('.contact-submit');
+      btn.textContent = 'Sending...'; btn.disabled = true;
+      try {
+        var r = await fetch('https://api.web3forms.com/submit', {method:'POST', body: new FormData(this)});
+        var j = await r.json();
+        if (j.success) { this.style.display = 'none'; document.getElementById('contact-success').style.display = 'block'; }
+        else { btn.textContent = 'Send Inquiry →'; btn.disabled = false; alert('Something went wrong. Please try again.'); }
+      } catch(err) { btn.textContent = 'Send Inquiry →'; btn.disabled = false; alert('Something went wrong. Please try again.'); }
+    });
+
+    // Success overlay dismiss
+    document.getElementById('book-success-close').addEventListener('click', function() {
+      document.getElementById('book-success-overlay').classList.remove('open');
+      document.body.style.overflow = '';
+    });
+
+    // Booking form submit
+    document.getElementById('book-submit-btn').addEventListener('click', async function() {
+      var errorEl = document.getElementById('book-error');
+      errorEl.style.display = 'none';
+      errorEl.textContent = '';
+
+      // Gather values
+      var unit       = document.getElementById('f-unit').value.trim();
+      var checkin    = document.getElementById('f-checkin').value.trim();
+      var checkout   = document.getElementById('f-checkout').value.trim();
+      var numGuests  = document.getElementById('f-num-guests').value.trim();
+      var fullName   = document.getElementById('f-full-name').value.trim();
+      var email      = document.getElementById('f-email').value.trim();
+      var phone      = document.getElementById('f-phone').value.trim();
+      var address    = document.getElementById('f-address').value.trim();
+      var city       = document.getElementById('f-city').value.trim();
+      var state      = document.getElementById('f-state').value.trim();
+      var zip        = document.getElementById('f-zip').value.trim();
+
+      // Basic validation
+      if (!unit || !checkin || !checkout || !numGuests || !fullName || !email || !phone || !address || !city || !state || !zip) {
+        errorEl.textContent = 'Please fill in all required fields before submitting.';
+        errorEl.style.display = 'block';
+        errorEl.scrollIntoView({behavior:'smooth', block:'center'});
+        return;
+      }
+      if (checkout <= checkin) {
+        errorEl.textContent = 'Check-out date must be after check-in date.';
+        errorEl.style.display = 'block';
+        errorEl.scrollIntoView({behavior:'smooth', block:'center'});
+        return;
+      }
+
+      var btn = this;
+      btn.textContent = 'Submitting...';
+      btn.disabled = true;
+
+      var payload = {
+        full_name:     fullName,
+        email:         email,
+        phone:         phone,
+        address:       address,
+        city:          city,
+        state:         state,
+        zip:           zip,
+        unit:          unit,
+        checkin_date:  checkin,
+        checkout_date: checkout,
+        num_guests:    parseInt(numGuests, 10)
+      };
+
+      try {
+        var res = await fetch(WORKER_URL + '/submit', {
+          method:  'POST',
+          headers: {'Content-Type': 'application/json'},
+          body:    JSON.stringify(payload)
+        });
+        var data = await res.json();
+        if (res.ok && data.booking_id) {
+          document.getElementById('book-success-id').textContent = 'Booking ID: ' + data.booking_id;
+          document.getElementById('book-success-overlay').classList.add('open');
+          document.body.style.overflow = 'hidden';
+          btn.textContent = 'Submitted';
+        } else {
+          var msg = (data && data.error) ? data.error : 'Something went wrong. Please try again or contact us directly.';
+          errorEl.textContent = msg;
+          errorEl.style.display = 'block';
+          errorEl.scrollIntoView({behavior:'smooth', block:'center'});
+          btn.textContent = 'Submit Booking Request →';
+          btn.disabled = false;
+        }
+      } catch(err) {
+        errorEl.textContent = 'Unable to reach the booking server. Please try again or contact us directly.';
+        errorEl.style.display = 'block';
+        errorEl.scrollIntoView({behavior:'smooth', block:'center'});
+        btn.textContent = 'Submit Booking Request →';
+        btn.disabled = false;
+      }
+    });
+
+  </script>
+</body>
+</html>
