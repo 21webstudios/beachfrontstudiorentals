@@ -141,6 +141,50 @@
     .book-submit:hover { background: var(--deep); }
     .book-submit:disabled { opacity: 0.55; cursor: not-allowed; }
 
+    /* Estimated pricing block */
+    .est-pricing {
+      display: none;
+      background: rgba(42,107,138,0.05);
+      border: 1px solid rgba(42,107,138,0.18);
+      border-radius: 2px;
+      padding: 1.25rem 1.5rem 1rem;
+      margin-bottom: 2rem;
+    }
+    .est-pricing-label {
+      font-family: 'Jost', sans-serif;
+      font-weight: 500;
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ocean);
+      margin: 0 0 0.9rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(42,107,138,0.15);
+    }
+    .est-pricing-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.88rem;
+      color: var(--deep);
+      padding: 0.3rem 0;
+    }
+    .est-pricing-row.est-total {
+      font-weight: 500;
+      font-size: 0.95rem;
+      border-top: 1px solid rgba(42,107,138,0.15);
+      margin-top: 0.35rem;
+      padding-top: 0.6rem;
+    }
+    .est-pricing-row span:last-child {
+      font-weight: 400;
+    }
+    .est-pricing-row.est-total span:last-child {
+      font-weight: 500;
+    }
+
     /* Success overlay */
     .book-success-overlay {
       display: none;
@@ -339,6 +383,12 @@
         </div>
       </div>
 
+      <!-- ESTIMATED PRICING — auto-shown when unit + dates are valid -->
+      <div class="est-pricing" id="est-pricing">
+        <p class="est-pricing-label">Estimated Charges</p>
+        <div id="est-pricing-rows"></div>
+      </div>
+
       <div class="book-section">
         <p class="book-section-label">Primary Guest</p>
         <div class="book-field">
@@ -416,14 +466,85 @@
 
     var WORKER_URL = 'https://contract-sender.21webstudios.workers.dev';
 
+    // ── Pricing constants (mirrors Worker logic) ─────────────────────────────
+    var PRETAX_RATES = {
+      '319': { winter: 243.36, offseason: 154.87 },
+      '322': { winter: 287.61, offseason: 199.12 }
+    };
+    var TAX_RATE = 0.13;
+
+    function isWinter(date) {
+      var m = date.getMonth() + 1;
+      var d = date.getDate();
+      if (m > 5 && m < 11) return false;
+      if (m === 5 && d >= 15) return false;
+      if (m === 11 && d < 15) return false;
+      return true;
+    }
+
+    function calcPricing(unit, checkin, checkout) {
+      var rates = PRETAX_RATES[unit];
+      if (!rates) return null;
+      var start = new Date(checkin  + 'T12:00:00');
+      var end   = new Date(checkout + 'T12:00:00');
+      if (end <= start) return null;
+      var subtotal = 0, nights = 0;
+      var cur = new Date(start);
+      while (cur < end) {
+        subtotal += isWinter(cur) ? rates.winter : rates.offseason;
+        nights++;
+        cur.setDate(cur.getDate() + 1);
+      }
+      var tax     = subtotal * TAX_RATE;
+      var total   = subtotal + tax;
+      var deposit = total * 0.5;
+      var balance = total - deposit;
+      function r2(n) { return Math.round(n * 100) / 100; }
+      return { nights: nights, subtotal: r2(subtotal), tax: r2(tax), total: r2(total), deposit: r2(deposit), balance: r2(balance) };
+    }
+
+    function fmt(n) { return '$' + n.toFixed(2); }
+
+    function row(label, value, isTotal) {
+      return '<div class="est-pricing-row' + (isTotal ? ' est-total' : '') + '"><span>' + label + '</span><span>' + value + '</span></div>';
+    }
+
+    function updateEstimate() {
+      var unit    = document.getElementById('f-unit').value.trim();
+      var checkin = document.getElementById('f-checkin').value.trim();
+      var checkout= document.getElementById('f-checkout').value.trim();
+      var el      = document.getElementById('est-pricing');
+      var rows    = document.getElementById('est-pricing-rows');
+
+      if (!unit || !checkin || !checkout) { el.style.display = 'none'; return; }
+
+      var p = calcPricing(unit, checkin, checkout);
+      if (!p) { el.style.display = 'none'; return; }
+
+      rows.innerHTML =
+        row(p.nights + ' night' + (p.nights !== 1 ? 's' : '') + ' &times; standard seasonal rate', fmt(p.subtotal)) +
+        row('Tax (13%)', fmt(p.tax)) +
+        row('Total', fmt(p.total), true) +
+        row('Deposit due at signing (50%)', fmt(p.deposit)) +
+        row('Balance due at check-in', fmt(p.balance));
+
+      el.style.display = 'block';
+    }
+
     // Pre-select unit from query string (?unit=319 or ?unit=322)
     (function() {
       var params = new URLSearchParams(window.location.search);
       var unit = params.get('unit');
       if (unit === '319' || unit === '322') {
         document.getElementById('f-unit').value = unit;
+        updateEstimate();
       }
     })();
+
+    // Auto-trigger estimate on any change to unit or dates
+    document.getElementById('f-unit').addEventListener('change', updateEstimate);
+    document.getElementById('f-checkin').addEventListener('change', updateEstimate);
+    document.getElementById('f-checkout').addEventListener('change', updateEstimate);
 
     // Nav toggle
     document.getElementById('nav-toggle').addEventListener('click', function() {
