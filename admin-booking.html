@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="styles.css"/>
   <style>
 
-    /* ── Gate ────────────────────────────────────── */
+    /* ── Gate ─────────────────────────────────────────── */
     .gate {
       min-height: 100vh;
       display: flex;
@@ -86,7 +86,7 @@
       margin-top: 0.75rem;
     }
 
-    /* ── Main (hidden until unlocked) ───────────── */
+    /* ── Main ─────────────────────────────────────────── */
     #main { display: none; }
 
     .admin-hero {
@@ -113,12 +113,12 @@
     }
 
     .admin-wrap {
-      max-width: 720px;
+      max-width: 780px;
       margin: 0 auto;
       padding: 3rem 1.5rem 5rem;
     }
 
-    /* ── Card ────────────────────────────────────── */
+    /* ── Card ─────────────────────────────────────────── */
     .admin-card {
       background: #fff;
       border: 1px solid rgba(201,169,110,0.2);
@@ -138,8 +138,59 @@
       padding-bottom: 0.5rem;
       border-bottom: 1px solid rgba(201,169,110,0.25);
     }
+    .admin-card-title.mt { margin-top: 1.75rem; }
 
-    /* ── Fields ──────────────────────────────────── */
+    /* ── Booking list table ───────────────────────────── */
+    .booking-table-wrap {
+      overflow-x: auto;
+    }
+    .booking-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Jost', sans-serif;
+      font-size: 0.85rem;
+    }
+    .booking-table th {
+      font-weight: 500;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(42,67,80,0.5);
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid rgba(201,169,110,0.25);
+      white-space: nowrap;
+    }
+    .booking-table td {
+      font-weight: 300;
+      color: var(--deep);
+      padding: 0.65rem 0.75rem;
+      border-bottom: 1px solid rgba(42,67,80,0.06);
+      white-space: nowrap;
+    }
+    .booking-table tr:last-child td { border-bottom: none; }
+    .booking-table tbody tr {
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .booking-table tbody tr:hover { background: rgba(201,169,110,0.07); }
+    .booking-table tbody tr.selected { background: rgba(42,107,138,0.07); }
+    .list-empty {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.88rem;
+      color: rgba(42,67,80,0.45);
+      padding: 1rem 0;
+    }
+    .list-loading {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.88rem;
+      color: rgba(42,67,80,0.45);
+      padding: 1rem 0;
+    }
+
+    /* ── Fields ───────────────────────────────────────── */
     .a-field {
       margin-bottom: 1rem;
     }
@@ -152,7 +203,8 @@
       color: var(--deep);
       margin-bottom: 0.35rem;
     }
-    .a-field input {
+    .a-field input,
+    .a-field select {
       width: 100%;
       box-sizing: border-box;
       font-family: 'Jost', sans-serif;
@@ -165,20 +217,29 @@
       padding: 0.65rem 0.85rem;
       outline: none;
       transition: border-color 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
     }
-    .a-field input:focus { border-color: var(--ocean); background: #fff; }
+    .a-field input:focus,
+    .a-field select:focus { border-color: var(--ocean); background: #fff; }
 
     .a-field-pair {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0.85rem;
     }
-    @media (max-width: 500px) {
-      .a-field-pair { grid-template-columns: 1fr; }
-      .admin-card { padding: 1.5rem 1.25rem; }
+    .a-field-trio {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 0.85rem;
+    }
+    @media (max-width: 540px) {
+      .a-field-pair  { grid-template-columns: 1fr; }
+      .a-field-trio  { grid-template-columns: 1fr; }
+      .admin-card    { padding: 1.5rem 1.25rem; }
     }
 
-    /* ── Buttons ─────────────────────────────────── */
+    /* ── Buttons ──────────────────────────────────────── */
     .a-btn {
       font-family: 'Jost', sans-serif;
       font-weight: 400;
@@ -200,21 +261,16 @@
       color: var(--deep);
     }
     .a-btn-gold:hover { background: #b8943a; color: #fff; }
+    .a-btn-full { width: 100%; display: block; text-align: center; }
 
-    /* ── Booking detail panel ────────────────────── */
-    .booking-detail {
-      display: none;
-      margin-top: 1.5rem;
-      border-top: 1px solid rgba(201,169,110,0.2);
-      padding-top: 1.5rem;
-    }
+    /* ── Detail grid ──────────────────────────────────── */
     .detail-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0.6rem 1.5rem;
       margin-bottom: 1.5rem;
     }
-    @media (max-width: 500px) { .detail-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 540px) { .detail-grid { grid-template-columns: 1fr; } }
     .detail-item .dl {
       font-family: 'Jost', sans-serif;
       font-weight: 400;
@@ -231,7 +287,7 @@
       color: var(--deep);
     }
 
-    /* ── Pricing breakdown ───────────────────────── */
+    /* ── Pricing table ────────────────────────────────── */
     .pricing-table {
       background: #faf9f7;
       border: 1px solid rgba(201,169,110,0.18);
@@ -256,7 +312,7 @@
       font-size: 0.95rem;
     }
 
-    /* ── Banners ─────────────────────────────────── */
+    /* ── Banners ──────────────────────────────────────── */
     .a-error {
       display: none;
       background: rgba(180,50,50,0.08);
@@ -282,6 +338,13 @@
       padding: 0.75rem 1rem;
       margin-top: 1rem;
       line-height: 1.5;
+    }
+
+    /* ── Divider between sections ─────────────────────── */
+    .section-divider {
+      border: none;
+      border-top: 1px solid rgba(201,169,110,0.2);
+      margin: 1.75rem 0;
     }
 
   </style>
@@ -354,29 +417,61 @@
     <!-- HERO -->
     <div class="admin-hero">
       <p class="admin-hero-eyebrow">BeachfrontStudioRentals.com &middot; Admin</p>
-      <h1>Booking Lookup</h1>
+      <h1>Booking Admin</h1>
     </div>
 
     <div class="admin-wrap">
 
-      <!-- LOOKUP CARD -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SECTION 1 — ALL BOOKINGS                       -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="admin-card">
+        <p class="admin-card-title">All Bookings</p>
+        <div id="list-loading" class="list-loading">Loading bookings&hellip;</div>
+        <div id="list-empty" class="list-empty" style="display:none;">No bookings found.</div>
+        <div class="booking-table-wrap" id="list-table-wrap" style="display:none;">
+          <table class="booking-table">
+            <thead>
+              <tr>
+                <th>Booking ID</th>
+                <th>Guest</th>
+                <th>Unit</th>
+                <th>Check-in</th>
+                <th>Check-out</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="list-tbody"></tbody>
+          </table>
+        </div>
+        <div class="a-error" id="list-error"></div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SECTION 2 — LOOK UP A BOOKING                  -->
+      <!-- ═══════════════════════════════════════════════ -->
       <div class="admin-card">
         <p class="admin-card-title">Look Up a Booking</p>
 
-        <div class="a-field">
-          <label>Booking ID</label>
-          <input type="text" id="lookup-id" placeholder="BSR-YYYYMMDD-XXXX"/>
+        <div class="a-field-pair">
+          <div class="a-field">
+            <label>Booking ID</label>
+            <input type="text" id="lookup-id" placeholder="BSR-YYYYMMDD-XXXX"/>
+          </div>
+          <div class="a-field" style="display:flex;align-items:flex-end;">
+            <button class="a-btn" id="lookup-btn" style="width:100%;">Look Up &rarr;</button>
+          </div>
         </div>
-        <button class="a-btn" id="lookup-btn">Look Up &rarr;</button>
         <div class="a-error" id="lookup-error"></div>
 
         <!-- Booking detail — shown after successful lookup -->
-        <div class="booking-detail" id="booking-detail">
-
+        <div id="booking-detail" style="display:none;">
+          <hr class="section-divider"/>
+          <p class="admin-card-title">Booking Detail</p>
           <div class="detail-grid" id="detail-grid"></div>
 
-          <div class="admin-card-title">Override &amp; Resend Contract</div>
-
+          <!-- Override & Resend -->
+          <p class="admin-card-title mt">Override &amp; Resend Contract</p>
           <div class="a-field-pair">
             <div class="a-field">
               <label>Override Nightly Rate ($)</label>
@@ -388,18 +483,106 @@
           </div>
           <div class="a-error" id="calculate-error"></div>
 
-          <!-- Pricing preview — shown after Calculate -->
-          <div id="pricing-preview" style="display:none;">
-            <div class="pricing-table" id="pricing-table"></div>
+          <div id="override-pricing-preview" style="display:none;">
+            <div class="pricing-table" id="override-pricing-table"></div>
             <button class="a-btn a-btn-gold" id="send-contract-btn">Send Contract to Guest &rarr;</button>
             <div class="a-error" id="override-error"></div>
             <div class="a-success-banner" id="override-success"></div>
           </div>
-
         </div>
       </div>
 
-    </div>
+      <!-- ═══════════════════════════════════════════════ -->
+      <!-- SECTION 3 — CREATE NEW BOOKING                 -->
+      <!-- ═══════════════════════════════════════════════ -->
+      <div class="admin-card">
+        <p class="admin-card-title">Create New Booking</p>
+
+        <div class="a-error" id="create-error"></div>
+
+        <p class="admin-card-title mt" style="margin-top:0;">Stay Details</p>
+        <div class="a-field">
+          <label>Unit *</label>
+          <select id="c-unit">
+            <option value="">Select a unit&hellip;</option>
+            <option value="319">Unit #319 &mdash; Oceanfront Retreat</option>
+            <option value="322">Unit #322 &mdash; Corner Studio</option>
+          </select>
+        </div>
+        <div class="a-field-pair">
+          <div class="a-field">
+            <label>Check-in Date *</label>
+            <input type="date" id="c-checkin"/>
+          </div>
+          <div class="a-field">
+            <label>Check-out Date *</label>
+            <input type="date" id="c-checkout"/>
+          </div>
+        </div>
+        <div class="a-field-pair">
+          <div class="a-field">
+            <label>Number of Guests *</label>
+            <select id="c-num-guests">
+              <option value="">Select&hellip;</option>
+              <option value="1">1 guest</option>
+              <option value="2">2 guests</option>
+            </select>
+          </div>
+          <div class="a-field">
+            <label>Override Nightly Rate ($ optional)</label>
+            <input type="number" id="c-override-rate" placeholder="Leave blank for standard rates" min="0" step="0.01"/>
+          </div>
+        </div>
+
+        <p class="admin-card-title mt">Guest Information</p>
+        <div class="a-field">
+          <label>Full Name *</label>
+          <input type="text" id="c-full-name" placeholder="As it appears on their ID"/>
+        </div>
+        <div class="a-field-pair">
+          <div class="a-field">
+            <label>Email Address *</label>
+            <input type="email" id="c-email"/>
+          </div>
+          <div class="a-field">
+            <label>Phone Number *</label>
+            <input type="tel" id="c-phone"/>
+          </div>
+        </div>
+        <div class="a-field">
+          <label>Street Address</label>
+          <input type="text" id="c-address"/>
+        </div>
+        <div class="a-field-trio">
+          <div class="a-field">
+            <label>City</label>
+            <input type="text" id="c-city"/>
+          </div>
+          <div class="a-field">
+            <label>State</label>
+            <input type="text" id="c-state" maxlength="2" placeholder="FL"/>
+          </div>
+          <div class="a-field">
+            <label>ZIP</label>
+            <input type="text" id="c-zip" maxlength="10"/>
+          </div>
+        </div>
+
+        <button class="a-btn" id="create-calculate-btn">Calculate Pricing &rarr;</button>
+        <div class="a-error" id="create-calculate-error"></div>
+
+        <!-- Pricing preview — shown after Calculate -->
+        <div id="create-pricing-preview" style="display:none;">
+          <hr class="section-divider"/>
+          <p class="admin-card-title">Pricing Preview</p>
+          <div class="pricing-table" id="create-pricing-table"></div>
+          <button class="a-btn a-btn-gold a-btn-full" id="create-send-btn">Create Booking &amp; Send Contract &rarr;</button>
+          <div class="a-error" id="create-send-error"></div>
+          <div class="a-success-banner" id="create-send-success"></div>
+        </div>
+      </div>
+
+    </div><!-- /.admin-wrap -->
 
     <!-- FOOTER -->
     <footer>
@@ -438,14 +621,17 @@
     var WORKER_URL     = 'https://contract-sender.21webstudios.workers.dev';
     var ADMIN_PASSWORD = 'hensonbennett2129';
 
-    var currentBooking    = null;  // full booking record from /admin/lookup
-    var calculatedPricing = null;  // pricing object from /admin/calculate
+    // State
+    var currentBooking        = null;  // booking loaded via lookup
+    var overrideCalcPricing   = null;  // pricing from /admin/calculate
+    var createCalcPricing     = null;  // pricing preview for new booking
 
-    // ── Gate ──────────────────────────────────────────────
+    // ── Gate ────────────────────────────────────────────
     function tryEnter() {
       if (document.getElementById('gate-input').value === ADMIN_PASSWORD) {
         document.getElementById('gate').style.display = 'none';
         document.getElementById('main').style.display = 'block';
+        loadBookingList();
       } else {
         document.getElementById('gate-error').style.display = 'block';
         document.getElementById('gate-input').value = '';
@@ -457,7 +643,7 @@
       if (e.key === 'Enter') tryEnter();
     });
 
-    // ── Nav toggle ────────────────────────────────────────
+    // ── Nav ──────────────────────────────────────────────
     document.getElementById('nav-toggle').addEventListener('click', function() {
       document.getElementById('nav-links').classList.toggle('open');
     });
@@ -467,7 +653,7 @@
       });
     });
 
-    // ── Contact modal ─────────────────────────────────────
+    // ── Contact modal ────────────────────────────────────
     function openContactModal() {
       document.getElementById('contact-form').style.display = 'flex';
       document.getElementById('contact-success').style.display = 'none';
@@ -483,7 +669,6 @@
     document.getElementById('contact-modal').addEventListener('click', function(e) {
       if (e.target === this) { this.classList.remove('open'); document.body.style.overflow = ''; }
     });
-
     var prefSel = document.getElementById('contact-pref');
     var phoneF  = document.getElementById('contact-phone');
     var nudge   = document.getElementById('contact-nudge');
@@ -492,7 +677,6 @@
     }
     prefSel.addEventListener('change', checkNudge);
     phoneF.addEventListener('input', checkNudge);
-
     document.getElementById('contact-form').addEventListener('submit', async function(e) {
       e.preventDefault();
       var btn = this.querySelector('.contact-submit');
@@ -505,7 +689,67 @@
       } catch(err) { btn.textContent = 'Send Inquiry →'; btn.disabled = false; alert('Something went wrong. Please try again.'); }
     });
 
-    // ── Lookup ────────────────────────────────────────────
+    // ════════════════════════════════════════════════════
+    // SECTION 1 — BOOKING LIST
+    // ════════════════════════════════════════════════════
+
+    async function loadBookingList() {
+      try {
+        var res  = await fetch(WORKER_URL + '/admin/list', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ password: ADMIN_PASSWORD })
+        });
+        var data = await res.json();
+
+        document.getElementById('list-loading').style.display = 'none';
+
+        if (!res.ok || !data.success) {
+          document.getElementById('list-error').textContent = (data && data.error) ? data.error : 'Could not load bookings.';
+          document.getElementById('list-error').style.display = 'block';
+          return;
+        }
+
+        if (!data.bookings || data.bookings.length === 0) {
+          document.getElementById('list-empty').style.display = 'block';
+          return;
+        }
+
+        var tbody = document.getElementById('list-tbody');
+        tbody.innerHTML = '';
+        data.bookings.forEach(function(b) {
+          var tr = document.createElement('tr');
+          tr.innerHTML =
+            '<td>' + b.bookingId + '</td>' +
+            '<td>' + b.guestName + '</td>' +
+            '<td>Unit #' + (b.unit ? b.unit.replace(/\D/g, '') : '') + '</td>' +
+            '<td>' + b.checkinDate + '</td>' +
+            '<td>' + b.checkoutDate + '</td>' +
+            '<td>$' + (b.total ? Number(b.total).toFixed(2) : '—') + '</td>';
+          tr.addEventListener('click', function() {
+            // Populate lookup field and trigger lookup
+            document.getElementById('lookup-id').value = b.bookingId;
+            document.querySelectorAll('.booking-table tbody tr').forEach(function(r) { r.classList.remove('selected'); });
+            tr.classList.add('selected');
+            document.getElementById('lookup-btn').click();
+            document.getElementById('lookup-btn').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          });
+          tbody.appendChild(tr);
+        });
+
+        document.getElementById('list-table-wrap').style.display = 'block';
+
+      } catch(err) {
+        document.getElementById('list-loading').style.display = 'none';
+        document.getElementById('list-error').textContent = 'Unable to reach the booking server.';
+        document.getElementById('list-error').style.display = 'block';
+      }
+    }
+
+    // ════════════════════════════════════════════════════
+    // SECTION 2 — LOOKUP
+    // ════════════════════════════════════════════════════
+
     document.getElementById('lookup-btn').addEventListener('click', async function() {
       var errorEl = document.getElementById('lookup-error');
       errorEl.style.display = 'none';
@@ -518,21 +762,21 @@
         return;
       }
 
-      // Reset all downstream state
+      // Reset downstream state
       document.getElementById('booking-detail').style.display = 'none';
-      document.getElementById('pricing-preview').style.display = 'none';
+      document.getElementById('override-pricing-preview').style.display = 'none';
       document.getElementById('calculate-error').style.display = 'none';
       document.getElementById('override-error').style.display = 'none';
       document.getElementById('override-success').style.display = 'none';
       document.getElementById('override-rate').value = '';
-      currentBooking    = null;
-      calculatedPricing = null;
+      currentBooking      = null;
+      overrideCalcPricing = null;
 
       var btn = this;
       btn.textContent = 'Looking up...'; btn.disabled = true;
 
       try {
-        var res = await fetch(WORKER_URL + '/admin/lookup', {
+        var res  = await fetch(WORKER_URL + '/admin/lookup', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
           body:    JSON.stringify({ password: ADMIN_PASSWORD, bookingId: bookingId })
@@ -562,13 +806,10 @@
       var g = b.guest;
       var r = b.reservation;
       var p = b.pricing;
-
       function row(label, value) {
         return '<div class="detail-item"><div class="dl">' + label + '</div><div class="dv">' + (value || '&mdash;') + '</div></div>';
       }
-
       var address = [g.address, g.city, g.state, g.zip].filter(Boolean).join(', ');
-
       document.getElementById('detail-grid').innerHTML =
         row('Booking ID',    b.bookingId) +
         row('Unit',          r.unit ? 'Unit #' + r.unit.replace(/\D/g, '') : '') +
@@ -587,25 +828,23 @@
         row('Balance',       p ? '$' + p.balance.toFixed(2) : '');
     }
 
-    // ── Calculate — calls /admin/calculate (no contract sent) ─────────
+    // Calculate override pricing
     document.getElementById('calculate-btn').addEventListener('click', async function() {
       var errorEl = document.getElementById('calculate-error');
       errorEl.style.display = 'none';
-      errorEl.textContent = '';
-      document.getElementById('pricing-preview').style.display = 'none';
+      document.getElementById('override-pricing-preview').style.display = 'none';
       document.getElementById('override-error').style.display = 'none';
       document.getElementById('override-success').style.display = 'none';
-      calculatedPricing = null;
+      overrideCalcPricing = null;
 
       if (!currentBooking) {
-        errorEl.textContent = 'No booking loaded. Please look up a booking first.';
+        errorEl.textContent = 'No booking loaded.';
         errorEl.style.display = 'block';
         return;
       }
-
       var rate = parseFloat(document.getElementById('override-rate').value);
       if (!rate || rate <= 0) {
-        errorEl.textContent = 'Please enter a valid nightly rate greater than zero.';
+        errorEl.textContent = 'Please enter a valid nightly rate.';
         errorEl.style.display = 'block';
         return;
       }
@@ -614,29 +853,24 @@
       btn.textContent = 'Calculating...'; btn.disabled = true;
 
       try {
-        var res = await fetch(WORKER_URL + '/admin/calculate', {
+        var res  = await fetch(WORKER_URL + '/admin/calculate', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({
-            password:     ADMIN_PASSWORD,
-            bookingId:    currentBooking.bookingId,
-            overrideRate: rate
-          })
+          body:    JSON.stringify({ password: ADMIN_PASSWORD, bookingId: currentBooking.bookingId, overrideRate: rate })
         });
         var data = await res.json();
 
         if (!res.ok || !data.success) {
-          errorEl.textContent = (data && data.error) ? data.error : 'Calculation failed. Please try again.';
+          errorEl.textContent = (data && data.error) ? data.error : 'Calculation failed.';
           errorEl.style.display = 'block';
           btn.textContent = 'Calculate →'; btn.disabled = false;
           return;
         }
 
-        calculatedPricing = data.pricing;
-        renderPricingPreview(data.pricing, rate);
-        document.getElementById('pricing-preview').style.display = 'block';
+        overrideCalcPricing = data.pricing;
+        renderPricingTable('override-pricing-table', data.pricing, rate);
+        document.getElementById('override-pricing-preview').style.display = 'block';
 
-        // Reset send button in case previously locked after a prior send
         var sendBtn = document.getElementById('send-contract-btn');
         sendBtn.textContent = 'Send Contract to Guest →';
         sendBtn.disabled = false;
@@ -644,37 +878,27 @@
         btn.textContent = 'Calculate →'; btn.disabled = false;
 
       } catch(err) {
-        errorEl.textContent = 'Unable to reach the booking server. Please try again.';
+        errorEl.textContent = 'Unable to reach the booking server.';
         errorEl.style.display = 'block';
         btn.textContent = 'Calculate →'; btn.disabled = false;
       }
     });
 
-    function renderPricingPreview(p, rate) {
-      document.getElementById('pricing-table').innerHTML =
-        '<div class="pricing-row"><span>' + p.nights + ' night' + (p.nights !== 1 ? 's' : '') + ' &times; $' + Number(rate).toFixed(2) + '</span><span>$' + p.subtotal.toFixed(2) + '</span></div>' +
-        '<div class="pricing-row"><span>Tax (13%)</span><span>$' + p.tax.toFixed(2) + '</span></div>' +
-        '<div class="pricing-row total"><span>Total</span><span>$' + p.total.toFixed(2) + '</span></div>' +
-        '<div class="pricing-row"><span>Deposit due (50%)</span><span>$' + p.deposit.toFixed(2) + '</span></div>' +
-        '<div class="pricing-row"><span>Balance due</span><span>$' + p.balance.toFixed(2) + '</span></div>';
-    }
-
-    // ── Send Contract — calls /admin/override (fires real contract) ────
+    // Send override contract
     document.getElementById('send-contract-btn').addEventListener('click', async function() {
       var errorEl   = document.getElementById('override-error');
       var successEl = document.getElementById('override-success');
-      errorEl.style.display   = 'none';
+      errorEl.style.display = 'none';
       successEl.style.display = 'none';
 
-      if (!currentBooking || !calculatedPricing) {
+      if (!currentBooking || !overrideCalcPricing) {
         errorEl.textContent = 'Please look up a booking and calculate pricing before sending.';
         errorEl.style.display = 'block';
         return;
       }
-
       var rate = parseFloat(document.getElementById('override-rate').value);
       if (!rate || rate <= 0) {
-        errorEl.textContent = 'Override rate is missing. Please recalculate before sending.';
+        errorEl.textContent = 'Override rate is missing. Please recalculate.';
         errorEl.style.display = 'block';
         return;
       }
@@ -683,14 +907,10 @@
       btn.textContent = 'Sending...'; btn.disabled = true;
 
       try {
-        var res = await fetch(WORKER_URL + '/admin/override', {
+        var res  = await fetch(WORKER_URL + '/admin/override', {
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({
-            password:     ADMIN_PASSWORD,
-            bookingId:    currentBooking.bookingId,
-            overrideRate: rate
-          })
+          body:    JSON.stringify({ password: ADMIN_PASSWORD, bookingId: currentBooking.bookingId, overrideRate: rate })
         });
         var data = await res.json();
 
@@ -698,7 +918,7 @@
           successEl.textContent = 'Contract sent to ' + currentBooking.guest.email + '. The guest will receive a SignWell signing link shortly.';
           successEl.style.display = 'block';
           btn.textContent = 'Contract Sent';
-          // Leave disabled — prevents accidental double-send
+          // Leave disabled — prevent double-send
         } else {
           errorEl.textContent = (data && data.error) ? data.error : 'Something went wrong. Please try again.';
           errorEl.style.display = 'block';
@@ -706,11 +926,218 @@
         }
 
       } catch(err) {
-        errorEl.textContent = 'Unable to reach the booking server. Please try again.';
+        errorEl.textContent = 'Unable to reach the booking server.';
         errorEl.style.display = 'block';
         btn.textContent = 'Send Contract to Guest →'; btn.disabled = false;
       }
     });
+
+    // ════════════════════════════════════════════════════
+    // SECTION 3 — CREATE NEW BOOKING
+    // ════════════════════════════════════════════════════
+
+    // Calculate pricing preview for new booking
+    document.getElementById('create-calculate-btn').addEventListener('click', async function() {
+      var errorEl = document.getElementById('create-calculate-error');
+      errorEl.style.display = 'none';
+      document.getElementById('create-pricing-preview').style.display = 'none';
+      document.getElementById('create-send-error').style.display = 'none';
+      document.getElementById('create-send-success').style.display = 'none';
+      createCalcPricing = null;
+
+      var unit      = document.getElementById('c-unit').value.trim();
+      var checkin   = document.getElementById('c-checkin').value.trim();
+      var checkout  = document.getElementById('c-checkout').value.trim();
+      var numGuests = document.getElementById('c-num-guests').value.trim();
+      var fullName  = document.getElementById('c-full-name').value.trim();
+      var email     = document.getElementById('c-email').value.trim();
+      var phone     = document.getElementById('c-phone').value.trim();
+
+      if (!unit || !checkin || !checkout || !numGuests || !fullName || !email || !phone) {
+        errorEl.textContent = 'Please fill in at minimum: unit, dates, number of guests, full name, email, and phone before calculating.';
+        errorEl.style.display = 'block';
+        return;
+      }
+      if (checkout <= checkin) {
+        errorEl.textContent = 'Check-out date must be after check-in date.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      var overrideRateRaw = document.getElementById('c-override-rate').value.trim();
+      var overrideRate    = overrideRateRaw !== '' ? parseFloat(overrideRateRaw) : null;
+
+      var btn = this;
+      btn.textContent = 'Calculating...'; btn.disabled = true;
+
+      // For the preview we build a temporary booking record and call /admin/calculate
+      // But /admin/calculate requires an existing bookingId. Instead we call /submit
+      // with a special flag... actually we calculate client-side using the Worker's
+      // same logic by calling a temporary /submit would create a real booking.
+      // Better: we use /admin/calculate by passing a known booking as a proxy — no.
+      // Correct approach: call /submit with all the data; if override rate is present
+      // it will use it. But this fires a real contract immediately.
+      //
+      // So we show a local estimate instead for the preview, then /submit on confirm.
+      // We replicate the pricing math here ONLY for the preview step.
+      try {
+        var previewPricing = calcPricingLocal(unit, checkin, checkout, overrideRate);
+        createCalcPricing  = { pricing: previewPricing, overrideRate: overrideRate };
+        renderPricingTable('create-pricing-table', previewPricing, overrideRate);
+        document.getElementById('create-pricing-preview').style.display = 'block';
+
+        var sendBtn = document.getElementById('create-send-btn');
+        sendBtn.textContent = 'Create Booking & Send Contract →';
+        sendBtn.disabled = false;
+
+        btn.textContent = 'Calculate Pricing →'; btn.disabled = false;
+
+      } catch(err) {
+        errorEl.textContent = err.message || 'Calculation failed.';
+        errorEl.style.display = 'block';
+        btn.textContent = 'Calculate Pricing →'; btn.disabled = false;
+      }
+    });
+
+    // Local pricing calculation — mirrors Worker logic exactly
+    // Used only for the Create New Booking preview step
+    var PRETAX_RATES = {
+      '319': { winter: 243.36, offseason: 154.87 },
+      '322': { winter: 287.61, offseason: 199.12 },
+    };
+    var TAX_RATE = 0.13;
+
+    function isWinterLocal(date) {
+      var m = date.getMonth() + 1;
+      var d = date.getDate();
+      if (m > 5 && m < 11) return false;
+      if (m === 5 && d >= 15) return false;
+      if (m === 11 && d < 15) return false;
+      return true;
+    }
+
+    function calcPricingLocal(unit, checkin, checkout, overrideRate) {
+      var unitKey = unit.replace(/\D/g, '');
+      var rates   = PRETAX_RATES[unitKey];
+      if (!rates) throw new Error('Unknown unit: ' + unit);
+
+      var start = new Date(checkin  + 'T12:00:00');
+      var end   = new Date(checkout + 'T12:00:00');
+      if (end <= start) throw new Error('Check-out must be after check-in');
+
+      var subtotal = 0;
+      var nights   = 0;
+      var cur      = new Date(start);
+
+      while (cur < end) {
+        var rate = (overrideRate != null && overrideRate !== '')
+          ? parseFloat(overrideRate)
+          : (isWinterLocal(cur) ? rates.winter : rates.offseason);
+        subtotal += rate;
+        nights++;
+        cur.setDate(cur.getDate() + 1);
+      }
+
+      var tax     = subtotal * TAX_RATE;
+      var total   = subtotal + tax;
+      var deposit = total * 0.5;
+      var balance = total - deposit;
+
+      function r2(n) { return Math.round(n * 100) / 100; }
+
+      return {
+        nights:   nights,
+        subtotal: r2(subtotal),
+        tax:      r2(tax),
+        total:    r2(total),
+        deposit:  r2(deposit),
+        balance:  r2(balance),
+      };
+    }
+
+    // Create booking & send contract
+    document.getElementById('create-send-btn').addEventListener('click', async function() {
+      var errorEl   = document.getElementById('create-send-error');
+      var successEl = document.getElementById('create-send-success');
+      errorEl.style.display   = 'none';
+      successEl.style.display = 'none';
+
+      if (!createCalcPricing) {
+        errorEl.textContent = 'Please calculate pricing before sending.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      var unit      = document.getElementById('c-unit').value.trim();
+      var checkin   = document.getElementById('c-checkin').value.trim();
+      var checkout  = document.getElementById('c-checkout').value.trim();
+      var numGuests = document.getElementById('c-num-guests').value.trim();
+      var fullName  = document.getElementById('c-full-name').value.trim();
+      var email     = document.getElementById('c-email').value.trim();
+      var phone     = document.getElementById('c-phone').value.trim();
+      var address   = document.getElementById('c-address').value.trim();
+      var city      = document.getElementById('c-city').value.trim();
+      var state     = document.getElementById('c-state').value.trim();
+      var zip       = document.getElementById('c-zip').value.trim();
+      var overrideRateRaw = document.getElementById('c-override-rate').value.trim();
+      var overrideRate    = overrideRateRaw !== '' ? parseFloat(overrideRateRaw) : null;
+
+      var btn = this;
+      btn.textContent = 'Sending...'; btn.disabled = true;
+
+      var payload = {
+        full_name:     fullName,
+        email:         email,
+        phone:         phone,
+        address:       address,
+        city:          city,
+        state:         state,
+        zip:           zip,
+        unit:          unit,
+        checkin_date:  checkin,
+        checkout_date: checkout,
+        num_guests:    parseInt(numGuests, 10),
+      };
+      if (overrideRate != null) payload.overrideRate = overrideRate;
+
+      try {
+        var res  = await fetch(WORKER_URL + '/submit', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify(payload)
+        });
+        var data = await res.json();
+
+        if (res.ok && data.success && data.bookingId) {
+          successEl.textContent = 'Booking created — ID: ' + data.bookingId + '. Contract sent to ' + email + ' via SignWell.';
+          successEl.style.display = 'block';
+          btn.textContent = 'Booking Created';
+          // Leave disabled — prevent double-send
+          // Refresh the booking list so the new entry appears
+          loadBookingList();
+        } else {
+          errorEl.textContent = (data && data.error) ? data.error : 'Something went wrong. Please try again.';
+          errorEl.style.display = 'block';
+          btn.textContent = 'Create Booking & Send Contract →'; btn.disabled = false;
+        }
+
+      } catch(err) {
+        errorEl.textContent = 'Unable to reach the booking server. Please try again.';
+        errorEl.style.display = 'block';
+        btn.textContent = 'Create Booking & Send Contract →'; btn.disabled = false;
+      }
+    });
+
+    // ── Shared pricing table renderer ────────────────────
+    function renderPricingTable(tableId, p, rate) {
+      var rateLabel = (rate != null && rate !== '') ? '$' + Number(rate).toFixed(2) + '/night (override)' : 'Standard seasonal rate';
+      document.getElementById(tableId).innerHTML =
+        '<div class="pricing-row"><span>' + p.nights + ' night' + (p.nights !== 1 ? 's' : '') + ' &times; ' + rateLabel + '</span><span>$' + p.subtotal.toFixed(2) + '</span></div>' +
+        '<div class="pricing-row"><span>Tax (13%)</span><span>$' + p.tax.toFixed(2) + '</span></div>' +
+        '<div class="pricing-row total"><span>Total</span><span>$' + p.total.toFixed(2) + '</span></div>' +
+        '<div class="pricing-row"><span>Deposit due (50%)</span><span>$' + p.deposit.toFixed(2) + '</span></div>' +
+        '<div class="pricing-row"><span>Balance due</span><span>$' + p.balance.toFixed(2) + '</span></div>';
+    }
 
   </script>
 </body>
