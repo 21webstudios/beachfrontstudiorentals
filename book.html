@@ -524,9 +524,7 @@
       rows.innerHTML =
         row(p.nights + ' night' + (p.nights !== 1 ? 's' : '') + ' &times; standard seasonal rate', fmt(p.subtotal)) +
         row('Tax (13%)', fmt(p.tax)) +
-        row('Total', fmt(p.total), true) +
-        row('Deposit due at signing (50%)', fmt(p.deposit)) +
-        row('Balance due at check-in', fmt(p.balance));
+        row('Total Due', fmt(p.total), true);
 
       el.style.display = 'block';
     }
