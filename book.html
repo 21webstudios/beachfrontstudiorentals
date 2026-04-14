@@ -487,20 +487,18 @@
       errorEl.style.display = 'none';
       errorEl.textContent = '';
 
-      // Gather values
-      var unit       = document.getElementById('f-unit').value.trim();
-      var checkin    = document.getElementById('f-checkin').value.trim();
-      var checkout   = document.getElementById('f-checkout').value.trim();
-      var numGuests  = document.getElementById('f-num-guests').value.trim();
-      var fullName   = document.getElementById('f-full-name').value.trim();
-      var email      = document.getElementById('f-email').value.trim();
-      var phone      = document.getElementById('f-phone').value.trim();
-      var address    = document.getElementById('f-address').value.trim();
-      var city       = document.getElementById('f-city').value.trim();
-      var state      = document.getElementById('f-state').value.trim();
-      var zip        = document.getElementById('f-zip').value.trim();
+      var unit      = document.getElementById('f-unit').value.trim();
+      var checkin   = document.getElementById('f-checkin').value.trim();
+      var checkout  = document.getElementById('f-checkout').value.trim();
+      var numGuests = document.getElementById('f-num-guests').value.trim();
+      var fullName  = document.getElementById('f-full-name').value.trim();
+      var email     = document.getElementById('f-email').value.trim();
+      var phone     = document.getElementById('f-phone').value.trim();
+      var address   = document.getElementById('f-address').value.trim();
+      var city      = document.getElementById('f-city').value.trim();
+      var state     = document.getElementById('f-state').value.trim();
+      var zip       = document.getElementById('f-zip').value.trim();
 
-      // Basic validation
       if (!unit || !checkin || !checkout || !numGuests || !fullName || !email || !phone || !address || !city || !state || !zip) {
         errorEl.textContent = 'Please fill in all required fields before submitting.';
         errorEl.style.display = 'block';
@@ -533,14 +531,15 @@
       };
 
       try {
-        var res = await fetch(WORKER_URL + '/submit', {
+        var res  = await fetch(WORKER_URL + '/submit', {
           method:  'POST',
           headers: {'Content-Type': 'application/json'},
           body:    JSON.stringify(payload)
         });
         var data = await res.json();
-        if (res.ok && data.booking_id) {
-          document.getElementById('book-success-id').textContent = 'Booking ID: ' + data.booking_id;
+
+        if (res.ok && data.success && data.bookingId) {
+          document.getElementById('book-success-id').textContent = 'Booking ID: ' + data.bookingId;
           document.getElementById('book-success-overlay').classList.add('open');
           document.body.style.overflow = 'hidden';
           btn.textContent = 'Submitted';
