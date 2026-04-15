@@ -141,9 +141,7 @@
     .admin-card-title.mt { margin-top: 1.75rem; }
 
     /* ── Booking list table ───────────────────────────── */
-    .booking-table-wrap {
-      overflow-x: auto;
-    }
+    .booking-table-wrap { overflow-x: auto; }
     .booking-table {
       width: 100%;
       border-collapse: collapse;
@@ -190,10 +188,36 @@
       padding: 1rem 0;
     }
 
-    /* ── Fields ───────────────────────────────────────── */
-    .a-field {
-      margin-bottom: 1rem;
+    /* ── Payment status badge ─────────────────────────── */
+    .pay-status-badge {
+      display: inline-block;
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 50px;
+      white-space: nowrap;
     }
+    .pay-status-badge.unpaid {
+      background: rgba(180,50,50,0.08);
+      color: #8b2020;
+      border: 1px solid rgba(180,50,50,0.25);
+    }
+    .pay-status-badge.deposit {
+      background: rgba(201,169,110,0.12);
+      color: #7a5a1a;
+      border: 1px solid rgba(201,169,110,0.35);
+    }
+    .pay-status-badge.paid {
+      background: rgba(42,107,138,0.08);
+      color: var(--ocean);
+      border: 1px solid rgba(42,107,138,0.25);
+    }
+
+    /* ── Fields ───────────────────────────────────────── */
+    .a-field { margin-bottom: 1rem; }
     .a-field label {
       display: block;
       font-family: 'Jost', sans-serif;
@@ -340,11 +364,40 @@
       line-height: 1.5;
     }
 
-    /* ── Divider between sections ─────────────────────── */
+    /* ── Divider ──────────────────────────────────────── */
     .section-divider {
       border: none;
       border-top: 1px solid rgba(201,169,110,0.2);
       margin: 1.75rem 0;
+    }
+
+    /* ── Payment section ──────────────────────────────── */
+    .payment-status-block {
+      background: #faf9f7;
+      border: 1px solid rgba(201,169,110,0.18);
+      border-radius: 1px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .payment-status-block .psl {
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      color: rgba(42,67,80,0.5);
+      text-transform: uppercase;
+      margin-bottom: 0.2rem;
+    }
+    .payment-status-block .psv {
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.92rem;
+      color: var(--deep);
     }
 
   </style>
@@ -439,6 +492,7 @@
                 <th>Check-in</th>
                 <th>Check-out</th>
                 <th>Total</th>
+                <th>Payment</th>
               </tr>
             </thead>
             <tbody id="list-tbody"></tbody>
@@ -470,7 +524,31 @@
           <p class="admin-card-title">Booking Detail</p>
           <div class="detail-grid" id="detail-grid"></div>
 
-          <!-- Override & Resend -->
+          <!-- Payment Status -->
+          <p class="admin-card-title mt">Payment Status</p>
+          <div class="payment-status-block" id="payment-status-block">
+            <div>
+              <div class="psl">Status</div>
+              <div class="psv" id="ps-status"></div>
+            </div>
+            <div>
+              <div class="psl">Amount Paid</div>
+              <div class="psv" id="ps-amount-paid"></div>
+            </div>
+            <div>
+              <div class="psl">Balance Remaining</div>
+              <div class="psv" id="ps-balance-remaining"></div>
+            </div>
+          </div>
+
+          <!-- Send Payment Link -->
+          <button class="a-btn a-btn-gold" id="send-payment-btn">Send Payment Link to Guest &rarr;</button>
+          <div class="a-error" id="payment-error"></div>
+          <div class="a-success-banner" id="payment-success"></div>
+
+          <hr class="section-divider"/>
+
+          <!-- Override & Resend Contract -->
           <p class="admin-card-title mt">Override &amp; Resend Contract</p>
           <div class="a-field-pair">
             <div class="a-field">
@@ -579,7 +657,15 @@
           <button class="a-btn a-btn-gold a-btn-full" id="create-send-btn">Create Booking &amp; Send Contract &rarr;</button>
           <div class="a-error" id="create-send-error"></div>
           <div class="a-success-banner" id="create-send-success"></div>
+
+          <!-- Send Payment Link for newly created booking -->
+          <div id="create-payment-wrap" style="display:none; margin-top:1rem;">
+            <button class="a-btn a-btn-full" id="create-payment-btn">Send Payment Link to Guest &rarr;</button>
+            <div class="a-error" id="create-payment-error"></div>
+            <div class="a-success-banner" id="create-payment-success"></div>
+          </div>
         </div>
+
       </div>
 
     </div><!-- /.admin-wrap -->
@@ -622,9 +708,10 @@
     var ADMIN_PASSWORD = 'hensonbennett2129';
 
     // State
-    var currentBooking        = null;  // booking loaded via lookup
-    var overrideCalcPricing   = null;  // pricing from /admin/calculate
-    var createCalcPricing     = null;  // pricing preview for new booking
+    var currentBooking      = null;   // booking loaded via lookup
+    var overrideCalcPricing = null;   // pricing from /admin/calculate
+    var createCalcPricing   = null;   // pricing preview for new booking
+    var createdBookingId    = null;   // booking ID after successful create
 
     // ── Gate ────────────────────────────────────────────
     function tryEnter() {
@@ -689,6 +776,14 @@
       } catch(err) { btn.textContent = 'Send Inquiry →'; btn.disabled = false; alert('Something went wrong. Please try again.'); }
     });
 
+    // ── Utility ──────────────────────────────────────────
+    function payStatusBadge(status) {
+      if (!status || status === 'unpaid') return '<span class="pay-status-badge unpaid">Unpaid</span>';
+      if (status === 'deposit_paid')      return '<span class="pay-status-badge deposit">Deposit Paid</span>';
+      if (status === 'paid_in_full')      return '<span class="pay-status-badge paid">Paid in Full</span>';
+      return '<span class="pay-status-badge unpaid">' + status + '</span>';
+    }
+
     // ════════════════════════════════════════════════════
     // SECTION 1 — BOOKING LIST
     // ════════════════════════════════════════════════════
@@ -725,9 +820,9 @@
             '<td>Unit #' + (b.unit ? b.unit.replace(/\D/g, '') : '') + '</td>' +
             '<td>' + b.checkinDate + '</td>' +
             '<td>' + b.checkoutDate + '</td>' +
-            '<td>$' + (b.total ? Number(b.total).toFixed(2) : '—') + '</td>';
+            '<td>$' + (b.total ? Number(b.total).toFixed(2) : '—') + '</td>' +
+            '<td>' + payStatusBadge(b.paymentStatus) + '</td>';
           tr.addEventListener('click', function() {
-            // Populate lookup field and trigger lookup
             document.getElementById('lookup-id').value = b.bookingId;
             document.querySelectorAll('.booking-table tbody tr').forEach(function(r) { r.classList.remove('selected'); });
             tr.classList.add('selected');
@@ -768,6 +863,8 @@
       document.getElementById('calculate-error').style.display = 'none';
       document.getElementById('override-error').style.display = 'none';
       document.getElementById('override-success').style.display = 'none';
+      document.getElementById('payment-error').style.display = 'none';
+      document.getElementById('payment-success').style.display = 'none';
       document.getElementById('override-rate').value = '';
       currentBooking      = null;
       overrideCalcPricing = null;
@@ -792,6 +889,7 @@
 
         currentBooking = data.booking;
         renderBookingDetail(data.booking);
+        renderPaymentStatus(data.booking);
         document.getElementById('booking-detail').style.display = 'block';
         btn.textContent = 'Look Up →'; btn.disabled = false;
 
@@ -828,7 +926,83 @@
         row('Balance',       p ? '$' + p.balance.toFixed(2) : '');
     }
 
-    // Calculate override pricing
+    function renderPaymentStatus(b) {
+      var status     = b.paymentStatus  || 'unpaid';
+      var amountPaid = b.amountPaid     || 0;
+      var total      = b.pricing ? b.pricing.total : 0;
+      var remaining  = Math.max(0, total - amountPaid);
+
+      var statusLabel = status === 'unpaid'       ? 'Unpaid'
+                      : status === 'deposit_paid' ? 'Deposit Paid (50%)'
+                      : status === 'paid_in_full' ? 'Paid in Full'
+                      : status;
+
+      document.getElementById('ps-status').innerHTML        = payStatusBadge(status);
+      document.getElementById('ps-amount-paid').textContent = '$' + Number(amountPaid).toFixed(2);
+      document.getElementById('ps-balance-remaining').textContent = '$' + remaining.toFixed(2);
+
+      // Disable send-payment button if already paid in full
+      var payBtn = document.getElementById('send-payment-btn');
+      if (status === 'paid_in_full') {
+        payBtn.disabled = true;
+        payBtn.textContent = 'Paid in Full — No Payment Due';
+      } else if (status === 'deposit_paid') {
+        payBtn.disabled = false;
+        payBtn.textContent = 'Send Balance Payment Link to Guest →';
+      } else {
+        payBtn.disabled = false;
+        payBtn.textContent = 'Send Payment Link to Guest →';
+      }
+    }
+
+    // ── Send Payment Link (Section 2) ────────────────────
+    document.getElementById('send-payment-btn').addEventListener('click', async function() {
+      var errorEl   = document.getElementById('payment-error');
+      var successEl = document.getElementById('payment-success');
+      errorEl.style.display   = 'none';
+      successEl.style.display = 'none';
+
+      if (!currentBooking) {
+        errorEl.textContent = 'No booking loaded.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      var btn = this;
+      btn.textContent = 'Sending...'; btn.disabled = true;
+
+      try {
+        var res  = await fetch(WORKER_URL + '/admin/send-payment-link', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ password: ADMIN_PASSWORD, bookingId: currentBooking.bookingId })
+        });
+        var data = await res.json();
+
+        if (res.ok && data.success) {
+          var typeLabel = data.paymentType === 'deposit' ? '50% deposit'
+                        : data.paymentType === 'balance' ? 'balance'
+                        : 'full payment';
+          successEl.textContent =
+            'Payment link sent to ' + currentBooking.guest.email + '. ' +
+            'Amount: $' + Number(data.amountDue).toFixed(2) + ' (' + typeLabel + ', ' + data.daysOut + ' days until check-in).';
+          successEl.style.display = 'block';
+          btn.textContent = 'Payment Link Sent';
+          // Leave disabled — prevent double-send
+        } else {
+          errorEl.textContent = (data && data.error) ? data.error : 'Something went wrong. Please try again.';
+          errorEl.style.display = 'block';
+          btn.textContent = 'Send Payment Link to Guest →'; btn.disabled = false;
+        }
+
+      } catch(err) {
+        errorEl.textContent = 'Unable to reach the booking server.';
+        errorEl.style.display = 'block';
+        btn.textContent = 'Send Payment Link to Guest →'; btn.disabled = false;
+      }
+    });
+
+    // ── Calculate override pricing ───────────────────────
     document.getElementById('calculate-btn').addEventListener('click', async function() {
       var errorEl = document.getElementById('calculate-error');
       errorEl.style.display = 'none';
@@ -884,11 +1058,11 @@
       }
     });
 
-    // Send override contract
+    // ── Send override contract ───────────────────────────
     document.getElementById('send-contract-btn').addEventListener('click', async function() {
       var errorEl   = document.getElementById('override-error');
       var successEl = document.getElementById('override-success');
-      errorEl.style.display = 'none';
+      errorEl.style.display   = 'none';
       successEl.style.display = 'none';
 
       if (!currentBooking || !overrideCalcPricing) {
@@ -943,7 +1117,9 @@
       document.getElementById('create-pricing-preview').style.display = 'none';
       document.getElementById('create-send-error').style.display = 'none';
       document.getElementById('create-send-success').style.display = 'none';
+      document.getElementById('create-payment-wrap').style.display = 'none';
       createCalcPricing = null;
+      createdBookingId  = null;
 
       var unit      = document.getElementById('c-unit').value.trim();
       var checkin   = document.getElementById('c-checkin').value.trim();
@@ -970,16 +1146,6 @@
       var btn = this;
       btn.textContent = 'Calculating...'; btn.disabled = true;
 
-      // For the preview we build a temporary booking record and call /admin/calculate
-      // But /admin/calculate requires an existing bookingId. Instead we call /submit
-      // with a special flag... actually we calculate client-side using the Worker's
-      // same logic by calling a temporary /submit would create a real booking.
-      // Better: we use /admin/calculate by passing a known booking as a proxy — no.
-      // Correct approach: call /submit with all the data; if override rate is present
-      // it will use it. But this fires a real contract immediately.
-      //
-      // So we show a local estimate instead for the preview, then /submit on confirm.
-      // We replicate the pricing math here ONLY for the preview step.
       try {
         var previewPricing = calcPricingLocal(unit, checkin, checkout, overrideRate);
         createCalcPricing  = { pricing: previewPricing, overrideRate: overrideRate };
@@ -1000,7 +1166,6 @@
     });
 
     // Local pricing calculation — mirrors Worker logic exactly
-    // Used only for the Create New Booking preview step
     var PRETAX_RATES = {
       '319': { winter: 243.36, offseason: 154.87 },
       '322': { winter: 287.61, offseason: 199.12 },
@@ -1109,11 +1274,17 @@
         var data = await res.json();
 
         if (res.ok && data.success && data.bookingId) {
+          createdBookingId = data.bookingId;
           successEl.textContent = 'Booking created — ID: ' + data.bookingId + '. Contract sent to ' + email + ' via SignWell.';
           successEl.style.display = 'block';
           btn.textContent = 'Booking Created';
           // Leave disabled — prevent double-send
-          // Refresh the booking list so the new entry appears
+          // Show payment link button
+          document.getElementById('create-payment-wrap').style.display = 'block';
+          var payBtn = document.getElementById('create-payment-btn');
+          payBtn.textContent = 'Send Payment Link to Guest →';
+          payBtn.disabled = false;
+          // Refresh booking list
           loadBookingList();
         } else {
           errorEl.textContent = (data && data.error) ? data.error : 'Something went wrong. Please try again.';
@@ -1125,6 +1296,53 @@
         errorEl.textContent = 'Unable to reach the booking server. Please try again.';
         errorEl.style.display = 'block';
         btn.textContent = 'Create Booking & Send Contract →'; btn.disabled = false;
+      }
+    });
+
+    // Send payment link for newly created booking (Section 3)
+    document.getElementById('create-payment-btn').addEventListener('click', async function() {
+      var errorEl   = document.getElementById('create-payment-error');
+      var successEl = document.getElementById('create-payment-success');
+      errorEl.style.display   = 'none';
+      successEl.style.display = 'none';
+
+      if (!createdBookingId) {
+        errorEl.textContent = 'No booking ID available. Please create a booking first.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      var btn = this;
+      btn.textContent = 'Sending...'; btn.disabled = true;
+
+      try {
+        var res  = await fetch(WORKER_URL + '/admin/send-payment-link', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ password: ADMIN_PASSWORD, bookingId: createdBookingId })
+        });
+        var data = await res.json();
+
+        if (res.ok && data.success) {
+          var typeLabel = data.paymentType === 'deposit' ? '50% deposit'
+                        : data.paymentType === 'balance' ? 'balance'
+                        : 'full payment';
+          successEl.textContent =
+            'Payment link sent. Amount: $' + Number(data.amountDue).toFixed(2) +
+            ' (' + typeLabel + ', ' + data.daysOut + ' days until check-in).';
+          successEl.style.display = 'block';
+          btn.textContent = 'Payment Link Sent';
+          // Leave disabled — prevent double-send
+        } else {
+          errorEl.textContent = (data && data.error) ? data.error : 'Something went wrong. Please try again.';
+          errorEl.style.display = 'block';
+          btn.textContent = 'Send Payment Link to Guest →'; btn.disabled = false;
+        }
+
+      } catch(err) {
+        errorEl.textContent = 'Unable to reach the booking server.';
+        errorEl.style.display = 'block';
+        btn.textContent = 'Send Payment Link to Guest →'; btn.disabled = false;
       }
     });
 

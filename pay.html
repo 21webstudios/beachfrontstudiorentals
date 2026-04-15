@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Secure Payment &middot; BeachfrontStudioRentals.com</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+  <style>
+
+    .pay-hero {
+      background: var(--deep);
+      color: var(--sand);
+      text-align: center;
+      padding: 5rem 1.5rem 3.5rem;
+    }
+    .pay-hero-eyebrow {
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 0 0 1rem;
+    }
+    .pay-hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(2rem, 5vw, 3rem);
+      margin: 0 0 1rem;
+      line-height: 1.15;
+    }
+    .pay-hero p {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 1rem;
+      color: rgba(245,240,230,0.75);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .pay-wrap {
+      max-width: 580px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
+    }
+
+    .pay-card {
+      background: #fff;
+      border: 1px solid rgba(201,169,110,0.2);
+      border-radius: 2px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 2px 24px rgba(42,67,80,0.07);
+      text-align: center;
+    }
+
+    /* ── Loading state ── */
+    .pay-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 1rem 0;
+    }
+    .pay-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(42,107,138,0.15);
+      border-top-color: var(--ocean);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .pay-loading-text {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    /* ── Booking summary box ── */
+    .pay-summary {
+      background: #faf9f7;
+      border: 1px solid rgba(201,169,110,0.18);
+      border-radius: 1px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.75rem;
+      text-align: left;
+    }
+    .pay-summary-label {
+      font-family: 'Jost', sans-serif;
+      font-weight: 500;
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 0 0 0.85rem;
+    }
+    .pay-summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.88rem;
+      color: var(--deep);
+      padding: 0.28rem 0;
+    }
+    .pay-summary-row.total {
+      font-weight: 500;
+      font-size: 1rem;
+      border-top: 1px solid rgba(201,169,110,0.3);
+      margin-top: 0.5rem;
+      padding-top: 0.65rem;
+    }
+    .pay-summary-row .label { color: var(--muted); font-weight: 300; }
+
+    /* ── Payment type badge ── */
+    .pay-type-badge {
+      display: inline-block;
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.75rem;
+      border-radius: 50px;
+      margin-bottom: 1.5rem;
+    }
+    .pay-type-badge.deposit {
+      background: rgba(201,169,110,0.12);
+      color: #8a6a2a;
+      border: 1px solid rgba(201,169,110,0.35);
+    }
+    .pay-type-badge.full {
+      background: rgba(42,107,138,0.08);
+      color: var(--ocean);
+      border: 1px solid rgba(42,107,138,0.25);
+    }
+    .pay-type-badge.balance {
+      background: rgba(42,107,138,0.08);
+      color: var(--ocean);
+      border: 1px solid rgba(42,107,138,0.25);
+    }
+
+    /* ── CTA button ── */
+    .pay-btn {
+      display: block;
+      width: 100%;
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.85rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #fff;
+      background: var(--ocean);
+      border: none;
+      border-radius: 1px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s;
+      margin-top: 0.5rem;
+    }
+    .pay-btn:hover { background: var(--deep); }
+    .pay-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .pay-secure-note {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 1rem;
+      line-height: 1.6;
+    }
+
+    /* ── Error state ── */
+    .pay-error-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 0;
+    }
+    .pay-error-icon {
+      font-size: 2.5rem;
+      color: #c0392b;
+    }
+    .pay-error-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 1.5rem;
+      color: var(--deep);
+    }
+    .pay-error-msg {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 380px;
+    }
+
+    /* ── Success state ── */
+    .pay-success-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 0;
+    }
+    .pay-success-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(42,107,138,0.1);
+      border: 2px solid var(--ocean);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--ocean);
+    }
+    .pay-success-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 1.75rem;
+      color: var(--deep);
+    }
+    .pay-success-msg {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.92rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 400px;
+    }
+    .pay-success-id {
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      color: var(--ocean);
+      background: rgba(42,107,138,0.06);
+      border: 1px solid rgba(42,107,138,0.18);
+      border-radius: 1px;
+      padding: 0.5rem 1rem;
+    }
+    .pay-home-link {
+      display: inline-block;
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ocean);
+      text-decoration: none;
+      margin-top: 0.5rem;
+      border-bottom: 1px solid rgba(42,107,138,0.3);
+      padding-bottom: 2px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .pay-home-link:hover { color: var(--deep); border-color: var(--deep); }
+
+    /* ── Cancel state ── */
+    .pay-cancel-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 0;
+    }
+    .pay-cancel-icon {
+      font-size: 2.5rem;
+      color: var(--gold);
+    }
+    .pay-cancel-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-size: 1.75rem;
+      color: var(--deep);
+    }
+    .pay-cancel-msg {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      font-size: 0.92rem;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 400px;
+    }
+    .pay-retry-btn {
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #fff;
+      background: var(--ocean);
+      border: none;
+      border-radius: 1px;
+      padding: 0.75rem 1.75rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 0.5rem;
+    }
+    .pay-retry-btn:hover { background: var(--deep); }
+
+    @media (max-width: 480px) {
+      .pay-card { padding: 2rem 1.25rem; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="site-nav">
+    <a class="nav-logo" href="index.html">
+      BeachfrontStudioRentals.com
+      <span>Lauderdale-by-the-Sea, Florida</span>
+    </a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="319.html">Unit #319</a></li>
+      <li><a href="322.html">Unit #322</a></li>
+      <li><a href="calendar-events.html">Calendar &amp; Events</a></li>
+      <li><button id="nav-contact-btn">Contact</button></li>
+    </ul>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </nav>
+
+  <!-- CONTACT MODAL -->
+  <div class="contact-modal" id="contact-modal">
+    <div class="contact-box">
+      <button class="contact-box-close" id="contact-modal-close">&times;</button>
+      <p class="contact-box-eyebrow">Get in Touch</p>
+      <h2 class="contact-box-title">Send a Direct Inquiry</h2>
+      <form class="contact-form" id="contact-form">
+        <input type="hidden" name="access_key" value="ede3a035-f85a-4089-bf98-8eaeab408e15"/>
+        <input type="hidden" name="subject" value="New Inquiry from BeachfrontStudioRentals.com"/>
+        <input type="hidden" name="from_name" value="BeachfrontStudioRentals.com"/>
+        <input type="text" name="name" placeholder="Your Name *" required/>
+        <input type="email" name="email" placeholder="Email Address *" required/>
+        <input type="tel" name="phone" id="contact-phone" placeholder="Phone Number (optional)"/>
+        <select name="contact_preference" id="contact-pref">
+          <option value="">Best way to reach you...</option>
+          <option value="Email">Email</option>
+          <option value="Text">Text</option>
+          <option value="Phone call">Phone call</option>
+        </select>
+        <div class="contact-nudge" id="contact-nudge">Looks like you didn't add a phone number &mdash; drop it above and we'll reach out that way.</div>
+        <div class="date-row">
+          <input type="date" name="checkin"/>
+          <input type="date" name="checkout"/>
+        </div>
+        <textarea name="message" placeholder="Tell us about your stay..."></textarea>
+        <button type="submit" class="contact-submit">Send Inquiry &rarr;</button>
+      </form>
+      <div class="contact-success" id="contact-success">
+        <div class="check">&#10003;</div>
+        <p>Thank you &mdash; your message is on its way. We'll be in touch shortly.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="pay-hero">
+    <p class="pay-hero-eyebrow">BeachfrontStudioRentals.com &middot; Secure Checkout</p>
+    <h1>Complete Your Payment</h1>
+    <p>Your reservation is being held. Please complete payment to confirm your dates.</p>
+  </div>
+
+  <!-- PAYMENT CARD -->
+  <div class="pay-wrap">
+    <div class="pay-card">
+
+      <!-- Loading state — shown on initial load and during redirect -->
+      <div class="pay-loading" id="pay-loading">
+        <div class="pay-spinner"></div>
+        <p class="pay-loading-text">Preparing your secure checkout&hellip;</p>
+      </div>
+
+      <!-- Payment ready state — shown when booking is loaded -->
+      <div id="pay-ready" style="display:none;">
+        <div class="pay-type-badge" id="pay-type-badge"></div>
+        <div class="pay-summary" id="pay-summary"></div>
+        <button class="pay-btn" id="pay-btn">Proceed to Secure Payment &rarr;</button>
+        <p class="pay-secure-note">You will be redirected to Stripe&rsquo;s secure payment page. Your card information is never stored on our servers. Payments are processed securely by Stripe.</p>
+      </div>
+
+      <!-- Success state — shown after successful payment -->
+      <div class="pay-success-state" id="pay-success">
+        <div class="pay-success-icon">&#10003;</div>
+        <h2 class="pay-success-title">Payment Received</h2>
+        <p class="pay-success-msg">Thank you &mdash; your payment has been processed successfully. You will receive a confirmation email shortly. We look forward to welcoming you to Lauderdale-by-the-Sea.</p>
+        <div class="pay-success-id" id="pay-success-id"></div>
+        <a href="index.html" class="pay-home-link">Return to BeachfrontStudioRentals.com &rarr;</a>
+      </div>
+
+      <!-- Cancel state — shown if guest cancels on Stripe's page -->
+      <div class="pay-cancel-state" id="pay-cancel">
+        <div class="pay-cancel-icon">&#8635;</div>
+        <h2 class="pay-cancel-title">Payment Not Completed</h2>
+        <p class="pay-cancel-msg">No payment was taken. Your reservation is still being held for 48 hours. Please complete payment to confirm your dates, or contact us if you have any questions.</p>
+        <button class="pay-retry-btn" id="pay-retry-btn">Try Again &rarr;</button>
+      </div>
+
+      <!-- Error state — shown if something goes wrong -->
+      <div class="pay-error-state" id="pay-error">
+        <div class="pay-error-icon">&#9888;</div>
+        <h2 class="pay-error-title">Something Went Wrong</h2>
+        <p class="pay-error-msg" id="pay-error-msg">We were unable to load your payment details. Please contact us directly and reference your Booking ID.</p>
+        <a href="index.html" class="pay-home-link">Return to BeachfrontStudioRentals.com &rarr;</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-logo">BeachfrontStudioRentals.com</div>
+        <p>Two private oceanfront studio residences on the Atlantic in Lauderdale-by-the-Sea, Florida. Book direct for the best rate &mdash; no fees, no middleman.</p>
+        <p class="footer-legal">Units #319 and #322 are privately owned and independently managed. BeachfrontStudioRentals.com is a direct-booking site operated by the unit owners. This site is not affiliated with Airbnb, VRBO, or any third-party booking platform.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Our Units</h4>
+        <ul>
+          <li><a href="319.html">Unit #319 &mdash; Oceanfront Retreat</a></li>
+          <li><a href="322.html">Unit #322 &mdash; Corner Studio</a></li>
+          <li><a href="calendar-events.html">Calendar &amp; Events</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Book Direct</h4>
+        <ul>
+          <li><a href="book.html">Reserve a Unit</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 BeachfrontStudioRentals.com &middot; Site by <a href="https://21webstudios.com" target="_blank" rel="noopener">21WebStudios.com</a></p>
+    </div>
+  </footer>
+
+  <script>
+    const WORKER_URL     = 'https://contract-sender.21webstudios.workers.dev';
+    const PUBLISHABLE_KEY = 'pk_test_51TMHuKJV9WRE7LtRTUM6FjxmuLJpReKkuoXAhmsjN117wVOMNnthsHZBvu79L83JETzKemhIAodnTXHYgyMuShOs00XXcWo0JP';
+
+    // ── Nav ───────────────────────────────────────────────
+    var navToggle = document.getElementById('nav-toggle');
+    var navLinks  = document.getElementById('nav-links');
+    navToggle.addEventListener('click', function() {
+      navLinks.classList.toggle('open');
+      navToggle.classList.toggle('open');
+    });
+
+    // Contact modal
+    var contactBtn   = document.getElementById('nav-contact-btn');
+    var contactModal = document.getElementById('contact-modal');
+    var contactClose = document.getElementById('contact-modal-close');
+    contactBtn.addEventListener('click', function() { contactModal.classList.add('open'); document.body.style.overflow = 'hidden'; });
+    contactClose.addEventListener('click', function() { contactModal.classList.remove('open'); document.body.style.overflow = ''; });
+    contactModal.addEventListener('click', function(e) { if (e.target === this) { this.classList.remove('open'); document.body.style.overflow = ''; } });
+
+    // Contact form submit
+    document.getElementById('contact-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var btn = this.querySelector('.contact-submit');
+      btn.textContent = 'Sending...'; btn.disabled = true;
+      try {
+        var r = await fetch('https://api.web3forms.com/submit', {method:'POST', body: new FormData(this)});
+        var j = await r.json();
+        if (j.success) { this.style.display = 'none'; document.getElementById('contact-success').style.display = 'block'; }
+        else { btn.textContent = 'Send Inquiry →'; btn.disabled = false; alert('Something went wrong. Please try again.'); }
+      } catch(err) { btn.textContent = 'Send Inquiry →'; btn.disabled = false; alert('Something went wrong. Please try again.'); }
+    });
+
+    // ── Utility ───────────────────────────────────────────
+    function fmtMoney(n) {
+      return '$' + Number(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+    function fmtDateStr(dateStr) {
+      var d = new Date(dateStr + 'T12:00:00');
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+    function showState(stateId) {
+      ['pay-loading','pay-ready','pay-success','pay-cancel','pay-error'].forEach(function(id) {
+        var el = document.getElementById(id);
+        el.style.display = (id === stateId) ? (id === 'pay-loading' || id === 'pay-ready' ? 'block' : 'flex') : 'none';
+        if (id === 'pay-loading' && stateId === 'pay-loading') el.style.display = 'flex';
+        if (id === 'pay-ready'   && stateId === 'pay-ready')   el.style.display = 'block';
+      });
+    }
+
+    // ── Parse URL params ──────────────────────────────────
+    var params    = new URLSearchParams(window.location.search);
+    var status    = params.get('status');    // 'success' | 'cancel' | null
+    var bookingId = params.get('booking');   // BSR-YYYYMMDD-XXXX
+
+    // ── Handle success return from Stripe ─────────────────
+    if (status === 'success' && bookingId) {
+      showState('pay-success');
+      document.getElementById('pay-success-id').textContent = 'Booking ID: ' + bookingId;
+
+    // ── Handle cancel return from Stripe ──────────────────
+    } else if (status === 'cancel' && bookingId) {
+      showState('pay-cancel');
+      // Retry button re-initiates checkout for same booking
+      document.getElementById('pay-retry-btn').addEventListener('click', function() {
+        showState('pay-loading');
+        initiateCheckout(bookingId);
+      });
+
+    // ── Normal load — show booking summary and Pay button ─
+    } else if (bookingId) {
+      showState('pay-loading');
+      loadBookingAndPrepare(bookingId);
+
+    // ── No booking ID — show error ────────────────────────
+    } else {
+      showState('pay-error');
+      document.getElementById('pay-error-msg').textContent =
+        'No booking reference was found in this link. Please check your email for the correct payment link, or contact us directly.';
+    }
+
+    // ── Load booking details and show summary ─────────────
+    async function loadBookingAndPrepare(id) {
+      try {
+        // We call the Worker to create a checkout session — this also
+        // determines the correct amount (50% or 100%) at this moment.
+        // We show the summary first using data returned from the session call.
+        var res  = await fetch(WORKER_URL + '/stripe/create-checkout', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ bookingId: id }),
+        });
+        var data = await res.json();
+
+        if (!res.ok || !data.success) {
+          showState('pay-error');
+          document.getElementById('pay-error-msg').textContent =
+            (data && data.error) ? data.error : 'Unable to load your booking. Please contact us directly.';
+          return;
+        }
+
+        // Redirect immediately to Stripe Checkout
+        window.location.href = data.checkoutUrl;
+
+      } catch(err) {
+        showState('pay-error');
+        document.getElementById('pay-error-msg').textContent =
+          'Unable to connect to the payment server. Please try again or contact us directly.';
+      }
+    }
+
+    // ── Initiate a fresh checkout (used by retry) ─────────
+    async function initiateCheckout(id) {
+      try {
+        var res  = await fetch(WORKER_URL + '/stripe/create-checkout', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ bookingId: id }),
+        });
+        var data = await res.json();
+
+        if (!res.ok || !data.success) {
+          showState('pay-error');
+          document.getElementById('pay-error-msg').textContent =
+            (data && data.error) ? data.error : 'Unable to initiate payment. Please contact us directly.';
+          return;
+        }
+
+        window.location.href = data.checkoutUrl;
+
+      } catch(err) {
+        showState('pay-error');
+        document.getElementById('pay-error-msg').textContent =
+          'Unable to connect to the payment server. Please try again or contact us directly.';
+      }
+    }
+
+  </script>
+</body>
+</html>
