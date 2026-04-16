@@ -825,14 +825,26 @@
       return '<span class="pay-status-badge unpaid">' + status + '</span>';
     }
 
-    // ── Reset delete UI to initial state ─────────────────
+    // ── Reset delete UI to fully fresh state ─────────────
+    // Called both on new lookup AND after a successful delete,
+    // ensuring button text/disabled state is always clean.
     function resetDeleteUI() {
-      document.getElementById('delete-btn').style.display        = 'inline-block';
-      document.getElementById('delete-confirm-msg').style.display = 'none';
-      document.getElementById('delete-confirm-btn').style.display = 'none';
-      document.getElementById('delete-cancel-btn').style.display  = 'none';
-      document.getElementById('delete-error').style.display       = 'none';
-      document.getElementById('delete-error').textContent         = '';
+      var deleteBtn      = document.getElementById('delete-btn');
+      var confirmBtn     = document.getElementById('delete-confirm-btn');
+      var cancelBtn      = document.getElementById('delete-cancel-btn');
+      var confirmMsg     = document.getElementById('delete-confirm-msg');
+      var deleteError    = document.getElementById('delete-error');
+
+      deleteBtn.style.display   = 'inline-block';
+      deleteBtn.disabled        = false;
+      confirmMsg.style.display  = 'none';
+      confirmBtn.style.display  = 'none';
+      confirmBtn.textContent    = 'Yes, Delete Permanently';
+      confirmBtn.disabled       = false;
+      cancelBtn.style.display   = 'none';
+      cancelBtn.disabled        = false;
+      deleteError.style.display = 'none';
+      deleteError.textContent   = '';
     }
 
     // ════════════════════════════════════════════════════
@@ -857,7 +869,7 @@
         }
 
         if (!data.bookings || data.bookings.length === 0) {
-          document.getElementById('list-empty').style.display    = 'block';
+          document.getElementById('list-empty').style.display      = 'block';
           document.getElementById('list-table-wrap').style.display = 'none';
           return;
         }
@@ -1197,6 +1209,8 @@
         var data = await res.json();
 
         if (res.ok && data.success) {
+          // Reset delete UI first so buttons are clean for the next booking
+          resetDeleteUI();
           // Hide the booking detail panel and clear the lookup field
           document.getElementById('booking-detail').style.display = 'none';
           document.getElementById('lookup-id').value = '';
