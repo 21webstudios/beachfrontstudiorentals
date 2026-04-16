@@ -286,6 +286,34 @@
     }
     .a-btn-gold:hover { background: #b8943a; color: #fff; }
     .a-btn-full { width: 100%; display: block; text-align: center; }
+    .a-btn-danger {
+      background: transparent;
+      color: #8b2020;
+      border: 1px solid rgba(180,50,50,0.4);
+    }
+    .a-btn-danger:hover { background: rgba(180,50,50,0.08); color: #6a1010; }
+    .a-btn-danger-confirm {
+      background: #8b2020;
+      color: #fff;
+      border: none;
+    }
+    .a-btn-danger-confirm:hover { background: #6a1010; }
+
+    /* ── Delete row ───────────────────────────────────── */
+    .delete-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .delete-confirm-msg {
+      display: none;
+      font-family: 'Jost', sans-serif;
+      font-weight: 400;
+      font-size: 0.82rem;
+      color: #8b2020;
+    }
 
     /* ── Detail grid ──────────────────────────────────── */
     .detail-grid {
@@ -567,6 +595,19 @@
             <div class="a-error" id="override-error"></div>
             <div class="a-success-banner" id="override-success"></div>
           </div>
+
+          <hr class="section-divider"/>
+
+          <!-- Delete Booking -->
+          <p class="admin-card-title mt">Delete Booking</p>
+          <div class="delete-row">
+            <button class="a-btn a-btn-danger" id="delete-btn">Delete This Booking</button>
+            <span class="delete-confirm-msg" id="delete-confirm-msg">This cannot be undone. Are you sure?</span>
+            <button class="a-btn a-btn-danger-confirm" id="delete-confirm-btn" style="display:none;">Yes, Delete Permanently</button>
+            <button class="a-btn" id="delete-cancel-btn" style="display:none;">Cancel</button>
+          </div>
+          <div class="a-error" id="delete-error"></div>
+
         </div>
       </div>
 
@@ -784,6 +825,16 @@
       return '<span class="pay-status-badge unpaid">' + status + '</span>';
     }
 
+    // ── Reset delete UI to initial state ─────────────────
+    function resetDeleteUI() {
+      document.getElementById('delete-btn').style.display        = 'inline-block';
+      document.getElementById('delete-confirm-msg').style.display = 'none';
+      document.getElementById('delete-confirm-btn').style.display = 'none';
+      document.getElementById('delete-cancel-btn').style.display  = 'none';
+      document.getElementById('delete-error').style.display       = 'none';
+      document.getElementById('delete-error').textContent         = '';
+    }
+
     // ════════════════════════════════════════════════════
     // SECTION 1 — BOOKING LIST
     // ════════════════════════════════════════════════════
@@ -806,7 +857,8 @@
         }
 
         if (!data.bookings || data.bookings.length === 0) {
-          document.getElementById('list-empty').style.display = 'block';
+          document.getElementById('list-empty').style.display    = 'block';
+          document.getElementById('list-table-wrap').style.display = 'none';
           return;
         }
 
@@ -832,6 +884,7 @@
           tbody.appendChild(tr);
         });
 
+        document.getElementById('list-empty').style.display      = 'none';
         document.getElementById('list-table-wrap').style.display = 'block';
 
       } catch(err) {
@@ -866,6 +919,7 @@
       document.getElementById('payment-error').style.display = 'none';
       document.getElementById('payment-success').style.display = 'none';
       document.getElementById('override-rate').value = '';
+      resetDeleteUI();
       currentBooking      = null;
       overrideCalcPricing = null;
 
@@ -1103,6 +1157,67 @@
         errorEl.textContent = 'Unable to reach the booking server.';
         errorEl.style.display = 'block';
         btn.textContent = 'Send Contract to Guest →'; btn.disabled = false;
+      }
+    });
+
+    // ── Delete booking — two-step confirmation ───────────
+    document.getElementById('delete-btn').addEventListener('click', function() {
+      // Step 1: reveal confirmation prompt
+      this.style.display = 'none';
+      document.getElementById('delete-confirm-msg').style.display  = 'inline';
+      document.getElementById('delete-confirm-btn').style.display  = 'inline-block';
+      document.getElementById('delete-cancel-btn').style.display   = 'inline-block';
+    });
+
+    document.getElementById('delete-cancel-btn').addEventListener('click', function() {
+      resetDeleteUI();
+    });
+
+    document.getElementById('delete-confirm-btn').addEventListener('click', async function() {
+      var errorEl = document.getElementById('delete-error');
+      errorEl.style.display = 'none';
+      errorEl.textContent   = '';
+
+      if (!currentBooking) {
+        errorEl.textContent   = 'No booking loaded.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      var btn = this;
+      btn.textContent = 'Deleting...'; btn.disabled = true;
+      document.getElementById('delete-cancel-btn').disabled = true;
+
+      try {
+        var res  = await fetch(WORKER_URL + '/admin/delete', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ password: ADMIN_PASSWORD, bookingId: currentBooking.bookingId })
+        });
+        var data = await res.json();
+
+        if (res.ok && data.success) {
+          // Hide the booking detail panel and clear the lookup field
+          document.getElementById('booking-detail').style.display = 'none';
+          document.getElementById('lookup-id').value = '';
+          currentBooking = null;
+          // Refresh the booking list
+          document.getElementById('list-loading').style.display    = 'block';
+          document.getElementById('list-table-wrap').style.display = 'none';
+          document.getElementById('list-empty').style.display      = 'none';
+          loadBookingList();
+        } else {
+          errorEl.textContent   = (data && data.error) ? data.error : 'Delete failed. Please try again.';
+          errorEl.style.display = 'block';
+          btn.textContent = 'Yes, Delete Permanently'; btn.disabled = false;
+          document.getElementById('delete-cancel-btn').disabled = false;
+        }
+
+      } catch(err) {
+        errorEl.textContent   = 'Unable to reach the booking server.';
+        errorEl.style.display = 'block';
+        btn.textContent = 'Yes, Delete Permanently'; btn.disabled = false;
+        document.getElementById('delete-cancel-btn').disabled = false;
       }
     });
 
